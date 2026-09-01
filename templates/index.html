@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+{% block title %}InternHub — The Modern Student Internship Platform{% endblock %}
+
+{% block public_content %}
+<div class="fade-in-up">
+    <!-- Hero Section with Bold Color Blocks -->
+    <section class="py-5" style="background: linear-gradient(180deg, var(--surface) 0%, var(--bg-app) 100%);">
+        <div class="container py-4">
+            <div class="row align-items-center g-5">
+                <div class="col-lg-6">
+                    <div class="d-inline-flex align-items-center gap-2 mb-3">
+                        <span class="badge" style="background: var(--blue-soft); color: var(--blue); font-size: 0.82rem; font-weight: 700; padding: 6px 14px; border-radius: var(--r-pill);">
+                            <i class="bi bi-intersect me-1"></i>University Engineering Network
+                        </span>
+                    </div>
+
+                    <h1 class="display-4 fw-bold mb-3" style="letter-spacing: -0.04em; line-height: 1.15;">
+                        Connect, Code & Build Your Future on <span style="color: var(--blue);">InternHub</span>.
+                    </h1>
+
+                    <p class="lead text-secondary mb-4" style="font-size: 1.15rem;">
+                        The student-first internship network connecting ambitious software engineers with top technology companies. Real verified roles, direct application tracking, and instant portfolio reviews.
+                    </p>
+
+                    <div class="d-flex flex-wrap gap-3 align-items-center">
+                        <a href="{{ url_for('register') }}" class="btn-tech-primary py-3 px-4 shadow-sm" style="font-size: 1rem;">
+                            <i class="bi bi-rocket-takeoff-fill"></i>Get Started Free
+                        </a>
+                        <a href="{{ url_for('login') }}" class="btn-tech-outline py-3 px-4" style="font-size: 1rem;">
+                            <i class="bi bi-box-arrow-in-right"></i>Member Sign In
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Right Graphic Feature Card -->
+                <div class="col-lg-6">
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <div class="stat-hero-card card-blue mb-3">
+                                <div class="stat-card-top">
+                                    <span class="stat-label-title">STUDENTS PLACED</span>
+                                    <div class="stat-icon-circle"><i class="bi bi-mortarboard-fill"></i></div>
+                                </div>
+                                <div class="stat-hero-number">10K+</div>
+                            </div>
+
+                            <div class="stat-hero-card card-orange">
+                                <div class="stat-card-top">
+                                    <span class="stat-label-title">ACTIVE OPENINGS</span>
+                                    <div class="stat-icon-circle"><i class="bi bi-briefcase-fill"></i></div>
+                                </div>
+                                <div class="stat-hero-number">2,400+</div>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="stat-hero-card card-purple mb-3">
+                                <div class="stat-card-top">
+                                    <span class="stat-label-title">PARTNERS</span>
+                                    <div class="stat-icon-circle"><i class="bi bi-building"></i></div>
+                                </div>
+                                <div class="stat-hero-number">500+</div>
+                            </div>
+
+                            <div class="stat-hero-card card-coral">
+                                <div class="stat-card-top">
+                                    <span class="stat-label-title">MATCH RATE</span>
+                                    <div class="stat-icon-circle"><i class="bi bi-send-fill"></i></div>
+                                </div>
+                                <div class="stat-hero-number">98%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Platform Features -->
+    <section class="py-5">
+        <div class="container py-3">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold mb-2">Built Specifically For College Students</h2>
+                <p class="text-muted">A streamlined, transparent three-stage pathway connecting campus talent and industry recruiters.</p>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="bento-card h-100 p-4 text-center">
+                        <div class="activity-icon-badge activity-icon-blue mx-auto mb-3" style="width: 50px; height: 50px; font-size: 1.3rem;">
+                            <i class="bi bi-code-slash"></i>
+                        </div>
+                        <h5 class="fw-bold mb-2">Student Dossier & Portfolio</h5>
+                        <p class="text-muted small mb-0">Highlight university degree, engineering skillset, CGPA, and uploaded resume portfolio.</p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="bento-card h-100 p-4 text-center">
+                        <div class="activity-icon-badge activity-icon-purple mx-auto mb-3" style="width: 50px; height: 50px; font-size: 1.3rem;">
+                            <i class="bi bi-compass"></i>
+                        </div>
+                        <h5 class="fw-bold mb-2">Discovery & Bookmarking</h5>
+                        <p class="text-muted small mb-0">Search and filter openings by tech stack, work mode, and duration. Bookmark opportunities to your personal library.</p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="bento-card h-100 p-4 text-center">
+                        <div class="activity-icon-badge activity-icon-teal mx-auto mb-3" style="width: 50px; height: 50px; font-size: 1.3rem;">
+                            <i class="bi bi-send-check"></i>
+                        </div>
+                        <h5 class="fw-bold mb-2">Direct Application Tracking</h5>
+                        <p class="text-muted small mb-0">Submit tailored applications and track candidate review status in real-time with automated notification alerts.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to action block -->
+    <section class="py-5 mb-4">
+        <div class="container">
+            <div class="bento-card p-5 text-center" style="background: linear-gradient(135deg, #111936 0%, #1A244D 100%); color: #FFFFFF;">
+                <h2 class="fw-bold text-white mb-3">Ready to Launch Your Career?</h2>
+                <p class="text-light mb-4 mx-auto" style="max-width: 540px;">Join thousands of university scholars building the next generation of technology products.</p>
+                <a href="{{ url_for('register') }}" class="btn-tech-primary py-3 px-5" style="font-size: 1.05rem;">
+                    Create Free Account
+                </a>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="fade-in-up">
+    <!-- Logged in view redirect helper -->
+    <div class="bento-card p-5 text-center">
+        <h3 class="fw-bold mb-3">Welcome to InternHub</h3>
+        <p class="text-muted mb-4">You are currently signed in. Head over to your dashboard to manage your workspace.</p>
+        <a href="{{ url_for('dashboard') }}" class="btn-tech-primary py-2 px-4">Open Dashboard</a>
+    </div>
+</div>
+{% endblock %}

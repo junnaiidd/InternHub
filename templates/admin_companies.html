@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% block title %}Companies Directory — Admin | InternHub{% endblock %}
+
+{% block content %}
+<div class="fade-in-up">
+
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 pb-2 border-bottom">
+        <div>
+            <h2 class="fw-bold mb-1">Companies Directory</h2>
+            <p class="text-muted small mb-0">
+                Manage all registered companies. Total: <strong>{{ companies | length }}</strong>
+            </p>
+        </div>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-sm btn-tech-outline">
+            <i class="bi bi-arrow-left me-1"></i>Back to Dashboard
+        </a>
+    </div>
+
+    <!-- Summary Stat Chips -->
+    <div class="d-flex flex-wrap gap-3 mb-4">
+        <div class="bento-card px-4 py-3 d-flex align-items-center gap-3" style="flex: 0 0 auto;">
+            <div class="activity-icon-badge activity-icon-purple" style="width: 36px; height: 36px; font-size: 0.9rem;">
+                <i class="bi bi-building-fill"></i>
+            </div>
+            <div>
+                <div class="fw-bold fs-5 mono-metric">{{ companies | length }}</div>
+                <div class="text-muted small">Total Companies</div>
+            </div>
+        </div>
+        <div class="bento-card px-4 py-3 d-flex align-items-center gap-3" style="flex: 0 0 auto;">
+            <div class="activity-icon-badge activity-icon-teal" style="width: 36px; height: 36px; font-size: 0.9rem;">
+                <i class="bi bi-briefcase-fill"></i>
+            </div>
+            <div>
+                <div class="fw-bold fs-5 mono-metric">{{ companies | map(attribute='internships_posted') | sum }}</div>
+                <div class="text-muted small">Internships Posted</div>
+            </div>
+        </div>
+        <div class="bento-card px-4 py-3 d-flex align-items-center gap-3" style="flex: 0 0 auto;">
+            <div class="activity-icon-badge activity-icon-blue" style="width: 36px; height: 36px; font-size: 0.9rem;">
+                <i class="bi bi-inbox"></i>
+            </div>
+            <div>
+                <div class="fw-bold fs-5 mono-metric">{{ companies | map(attribute='total_applications') | sum }}</div>
+                <div class="text-muted small">Total Applications</div>
+            </div>
+        </div>
+    </div>
+
+    {% if companies %}
+        <div class="bento-card mb-5 p-0" style="overflow: hidden;">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead style="background: #f8f7f2;">
+                        <tr>
+                            <th class="ps-4 py-3 text-muted small fw-bold text-uppercase">Company Name</th>
+                            <th class="py-3 text-muted small fw-bold text-uppercase">Email</th>
+                            <th class="py-3 text-muted small fw-bold text-uppercase">Industry</th>
+                            <th class="py-3 text-muted small fw-bold text-uppercase">Internships</th>
+                            <th class="py-3 text-muted small fw-bold text-uppercase">Applications</th>
+                            <th class="py-3 text-muted small fw-bold text-uppercase pe-4 text-end">Profile</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for company in companies %}
+                        <tr>
+                            <td class="ps-4 py-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="activity-icon-badge activity-icon-purple" style="width: 32px; height: 32px; font-size: 0.78rem; flex-shrink: 0;">
+                                        {{ company.company_name[0].upper() if company.company_name else 'C' }}
+                                    </div>
+                                    <span class="fw-semibold small">{{ company.company_name }}</span>
+                                </div>
+                            </td>
+                            <td class="py-3">
+                                <span class="text-muted small">{{ company.email }}</span>
+                            </td>
+                            <td class="py-3">
+                                <span class="badge bg-secondary-subtle text-secondary fw-bold px-2 py-1">
+                                    {{ company.industry or 'Not specified' }}
+                                </span>
+                            </td>
+                            <td class="py-3">
+                                <span class="fw-semibold small">{{ company.internships_posted or 0 }}</span>
+                            </td>
+                            <td class="py-3">
+                                <span class="fw-semibold small">{{ company.total_applications or 0 }}</span>
+                            </td>
+                            <td class="py-3 pe-4 text-end">
+                                <a href="{{ url_for('company_profile', company_id=company.id) }}" class="btn btn-sm btn-tech-outline">
+                                    <i class="bi bi-eye me-1"></i>View
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <div class="bento-card text-center py-8">
+            <div class="activity-icon-badge activity-icon-purple mx-auto mb-3" style="width: 64px; height: 64px; font-size: 1.8rem;">
+                <i class="bi bi-building-fill"></i>
+            </div>
+            <h5 class="fw-bold mb-2">No Companies Registered</h5>
+            <p class="text-muted small">Companies haven't registered on the platform yet.</p>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

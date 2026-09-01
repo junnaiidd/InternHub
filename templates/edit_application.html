@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% block title %}Edit Application — InternHub Portal{% endblock %}
+
+{% block content %}
+<div class="container py-4 fade-in-up" style="max-width: 840px;">
+
+    <!-- Back Link -->
+    <a href="{{ url_for('student_applications') }}" class="btn btn-outline-light btn-sm px-3 mb-4">
+        <i class="bi bi-arrow-left me-1"></i>Back to Applications
+    </a>
+
+    <div class="card p-4 p-md-5 mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom"
+            style="border-color: var(--border) !important;">
+            <div>
+                <div class="d-inline-flex align-items-center gap-2 mb-1">
+                    <span class="academic-badge-stamp"
+                        style="background: var(--dusty-blue-soft); color: var(--dusty-blue); border-color: var(--dusty-blue-border);">
+                        <i class="bi bi-pencil-fill me-1"></i>Application Revision
+                    </span>
+                </div>
+                <h3 class="fw-bold mb-0">Edit Application Details</h3>
+                <p class="text-muted small mb-0">Revise your candidate dossier and attached materials.</p>
+            </div>
+        </div>
+
+        <form method="post" enctype="multipart/form-data" novalidate>
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label class="form-label" for="full_name">Full Name *</label>
+                    <input type="text" id="full_name" name="full_name" class="form-control"
+                        placeholder="{{ student.full_name if student else '' }}"
+                        value="{{ request.form.full_name or (student.full_name if student else '') }}" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="phone">Phone Number</label>
+                    <input type="text" id="phone" name="phone" class="form-control"
+                        placeholder="{{ student.phone or '' if student else '' }}"
+                        value="{{ request.form.phone or '' }}">
+                </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label class="form-label" for="college">University / College</label>
+                    <input type="text" id="college" name="college" class="form-control"
+                        placeholder="{{ student.college if student else '' }}"
+                        value="{{ request.form.college or (student.college if student else '') }}">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="degree">Degree & Major</label>
+                    <input type="text" id="degree" name="degree" class="form-control"
+                        placeholder="{{ student.degree if student else '' }}"
+                        value="{{ request.form.degree or (student.degree if student else '') }}">
+                </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label class="form-label" for="cgpa">CGPA / Percentage</label>
+                    <input type="text" id="cgpa" name="cgpa" class="form-control" placeholder="e.g. 8.9"
+                        value="{{ request.form.cgpa or '' }}">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="preferred_location">Preferred Location / Remote</label>
+                    <input type="text" id="preferred_location" name="preferred_location" class="form-control"
+                        placeholder="e.g. Remote" value="{{ request.form.preferred_location or '' }}">
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" for="skills">Skills (Comma separated)</label>
+                <input type="text" id="skills" name="skills" class="form-control"
+                    placeholder="e.g. Python, SQL, Flask, Git" value="{{ request.form.skills or '' }}">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" for="portfolio_links">Portfolio & Project Links</label>
+                <input type="text" id="portfolio_links" name="portfolio_links" class="form-control"
+                    placeholder="GitHub, LinkedIn, Personal URLs" value="{{ request.form.portfolio_links or '' }}">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" for="certifications">Certifications</label>
+                <textarea id="certifications" name="certifications" class="form-control" rows="2"
+                    placeholder="List any certifications...">{{ request.form.certifications or '' }}</textarea>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label" for="cover_letter">Cover Letter</label>
+                <textarea id="cover_letter" name="cover_letter" class="form-control" rows="5"
+                    placeholder="Write or revise your cover letter...">{{ request.form.cover_letter or '' }}</textarea>
+            </div>
+
+            <div class="card card-warm p-3 mb-4">
+                <label class="form-label mb-2" for="resume"><i class="bi bi-file-earmark-pdf-fill me-1"
+                        style="color: var(--primary-teal);"></i>Updated Resume (PDF Only)</label>
+                <input type="file" id="resume" name="resume" accept="application/pdf" class="form-control">
+                <small class="text-muted mt-1 d-block" style="font-size: 0.75rem;">Leave empty to retain your previously
+                    submitted resume.</small>
+            </div>
+
+            <div class="d-flex gap-3">
+                <button type="submit" class="btn btn-primary px-4 py-2 shadow-sm">
+                    <i class="bi bi-check-circle-fill me-1"></i>Save Application Changes
+                </button>
+                <a href="{{ url_for('student_applications') }}" class="btn btn-outline-light px-4 py-2">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

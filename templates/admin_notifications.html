@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+{% block title %}Notifications Center — Admin | InternHub{% endblock %}
+
+{% block content %}
+<div class="fade-in-up">
+
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 pb-2 border-bottom">
+        <div>
+            <h2 class="fw-bold mb-1">Notifications Center</h2>
+            <p class="text-muted small mb-0">
+                Recent system activity and platform alerts
+            </p>
+        </div>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-sm btn-tech-outline">
+            <i class="bi bi-arrow-left me-1"></i>Back to Dashboard
+        </a>
+    </div>
+
+    <div class="row g-4">
+        <!-- Recent Users -->
+        <div class="col-lg-6">
+            <div class="bento-card p-4">
+                <div class="d-flex align-items-center gap-2 mb-4 pb-3 border-bottom">
+                    <div class="activity-icon-badge activity-icon-blue" style="width: 40px; height: 40px; font-size: 1rem;">
+                        <i class="bi bi-person-plus-fill"></i>
+                    </div>
+                    <h5 class="fw-bold mb-0">Recent Registrations</h5>
+                </div>
+
+                {% if recent_users %}
+                <div class="d-flex flex-column gap-3">
+                    {% for user in recent_users %}
+                    <div class="d-flex align-items-center justify-content-between p-3 rounded-2" style="background-color: #f8f7f2;">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="activity-icon-badge
+                                {% if user.role == 'student' %}activity-icon-blue
+                                {% elif user.role == 'company' %}activity-icon-purple
+                                {% else %}activity-icon-orange{% endif %}"
+                                 style="width: 36px; height: 36px; font-size: 0.8rem; flex-shrink: 0;">
+                                {{ user.email[0].upper() }}
+                            </div>
+                            <div>
+                                <div class="fw-semibold very-small">{{ user.email }}</div>
+                                <div class="text-muted very-small">
+                                    {{ user.created_at.strftime('%d %b %Y at %H:%M') if user.created_at else 'Recently' }}
+                                </div>
+                            </div>
+                        </div>
+                        <span class="badge
+                            {% if user.role == 'student' %}bg-primary-subtle text-primary
+                            {% elif user.role == 'company' %}bg-purple-subtle text-purple
+                            {% else %}bg-warning-subtle text-warning-emphasis{% endif %}
+                            fw-bold px-2 py-1 text-capitalize">
+                            {{ user.role }}
+                        </span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted text-center py-4">No recent registrations</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Recent Applications -->
+        <div class="col-lg-6">
+            <div class="bento-card p-4">
+                <div class="d-flex align-items-center gap-2 mb-4 pb-3 border-bottom">
+                    <div class="activity-icon-badge activity-icon-teal" style="width: 40px; height: 40px; font-size: 1rem;">
+                        <i class="bi bi-inbox-fill"></i>
+                    </div>
+                    <h5 class="fw-bold mb-0">Recent Applications</h5>
+                </div>
+
+                {% if recent_applications %}
+                <div class="d-flex flex-column gap-3">
+                    {% for app in recent_applications %}
+                    <div class="p-3 rounded-2" style="background-color: #f8f7f2;">
+                        <div class="d-flex align-items-start justify-content-between gap-2 mb-2">
+                            <div class="d-flex align-items-center gap-2 flex-grow-1">
+                                <div class="activity-icon-badge activity-icon-teal" style="width: 32px; height: 32px; font-size: 0.7rem; flex-shrink: 0;">
+                                    {{ app.full_name[0].upper() if app.full_name else 'S' }}
+                                </div>
+                                <div class="flex-grow-1 text-truncate">
+                                    <div class="fw-semibold very-small text-truncate">{{ app.full_name or 'Unknown' }}</div>
+                                    <div class="text-muted very-small text-truncate">{{ app.title }} @ {{ app.company_name }}</div>
+                                </div>
+                            </div>
+                            <span class="badge
+                                {% if app.status == 'pending' %}bg-warning-subtle text-warning-emphasis
+                                {% elif app.status == 'accepted' %}bg-success-subtle text-success
+                                {% else %}bg-danger-subtle text-danger{% endif %}
+                                fw-bold px-2 py-1 text-capitalize"
+                                style="flex-shrink: 0;">
+                                {{ app.status }}
+                            </span>
+                        </div>
+                        <div class="text-muted very-small">
+                            {{ app.applied_at.strftime('%d %b %Y at %H:%M') if app.applied_at else 'Recently' }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted text-center py-4">No recent applications</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- System Actions -->
+    <div class="row g-4 mt-3">
+        <div class="col-lg-6">
+            <div class="bento-card p-4">
+                <div class="d-flex align-items-center gap-2 mb-4 pb-3 border-bottom">
+                    <div class="activity-icon-badge activity-icon-purple" style="width: 40px; height: 40px; font-size: 1rem;">
+                        <i class="bi bi-envelope-fill"></i>
+                    </div>
+                    <h5 class="fw-bold mb-0">Email Campaigns</h5>
+                </div>
+
+                <div class="d-flex flex-column gap-3">
+                    <a href="{{ url_for('trigger_weekly_digest') }}" class="btn btn-tech-primary w-100">
+                        <i class="bi bi-send-fill me-2"></i>Trigger Weekly Digest
+                    </a>
+                    <a href="{{ url_for('trigger_deadline_alerts') }}" class="btn btn-tech-outline w-100">
+                        <i class="bi bi-bell-fill me-2"></i>Send Deadline Reminders
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="bento-card p-4">
+                <div class="d-flex align-items-center gap-2 mb-4 pb-3 border-bottom">
+                    <div class="activity-icon-badge activity-icon-green" style="width: 40px; height: 40px; font-size: 1rem;">
+                        <i class="bi bi-info-circle-fill"></i>
+                    </div>
+                    <h5 class="fw-bold mb-0">System Info</h5>
+                </div>
+
+                <div class="text-muted small">
+                    <p class="mb-2">All notifications and alerts are processed asynchronously for optimal platform performance.</p>
+                    <p class="mb-0">Monitor the application pipeline and user activity from the dashboard.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

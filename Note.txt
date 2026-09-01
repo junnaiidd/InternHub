@@ -1,0 +1,3 @@
+Role	Email	Password
+Admin	admin@portal.com	admin123
+Company	techcorp@example.com	company123

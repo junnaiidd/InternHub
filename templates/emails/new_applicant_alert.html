@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Applicant Received</title>
+</head>
+<body style="font-family: 'Manrope', 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #FAF7F2; color: #252422; margin: 0; padding: 20px; line-height: 1.6;">
+    <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #ffffff; border: 1px solid #D8CEBD; border-radius: 16px; padding: 40px; box-shadow: 0 4px 16px rgba(37,28,10,.04);">
+        <tr>
+            <td>
+                <!-- Logo -->
+                <div style="font-size: 24px; font-weight: bold; color: #252422; letter-spacing: -0.03em; margin-bottom: 30px; border-bottom: 1px solid #D8CEBD; padding-bottom: 20px;">
+                    <span style="color: #C85C27;">★</span> InternHub
+                </div>
+                
+                <!-- Headline -->
+                <h2 style="font-size: 22px; font-weight: 700; color: #252422; margin-top: 0; margin-bottom: 15px; letter-spacing: -0.02em;">{% if is_update %}Application Update Alert{% else %}New Applicant Alert{% endif %}</h2>
+                
+                <p style="font-size: 15px; color: #6D675F; margin-bottom: 25px;">Hello {{ company_name }},</p>
+                
+                <p style="font-size: 15px; color: #252422; margin-bottom: 20px;">
+                    {% if is_update %}
+                        A candidate has just updated their submitted application details for your listing:
+                    {% else %}
+                        A talented student has just submitted their application for your listing:
+                    {% endif %}
+                    <strong style="color: #C85C27;">{{ title }}</strong>.
+                </p>
+                
+                <!-- Applicant Details Table -->
+                <div style="background-color: #FAF7F2; border-radius: 12px; padding: 20px; margin-bottom: 30px; border: 1px solid #E2DACB;">
+                    <h3 style="font-size: 14px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.05em; color: #6D675F; margin-top: 0; margin-bottom: 12px;">Applicant Profile</h3>
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                        <tr>
+                            <td width="35%" style="font-size: 14px; color: #6D675F; padding-bottom: 8px;"><strong>Full Name:</strong></td>
+                            <td style="font-size: 14px; color: #252422; padding-bottom: 8px;">{{ student_name }}</td>
+                        </tr>
+                        <tr>
+                            <td style="font-size: 14px; color: #6D675F; padding-bottom: 8px;"><strong>College/Uni:</strong></td>
+                            <td style="font-size: 14px; color: #252422; padding-bottom: 8px;">{{ college }}</td>
+                        </tr>
+                        <tr>
+                            <td style="font-size: 14px; color: #6D675F;"><strong>Degree/Major:</strong></td>
+                            <td style="font-size: 14px; color: #252422;">{{ degree }}</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <!-- CTA -->
+                <p style="font-size: 15px; color: #6D675F; margin-bottom: 30px;">
+                    Please log into your dashboard to review their full resume, cover letter, and update their application status.
+                </p>
+                
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <a href="http://127.0.0.1:5000/dashboard" style="background-color: #C85C27; color: #ffffff !important; text-decoration: none; padding: 12px 30px; font-size: 14px; font-weight: bold; border-radius: 999px; display: inline-block; box-shadow: 0 4px 12px rgba(200,92,39,.25);">
+                        Go to Dashboard &rarr;
+                    </a>
+                </div>
+                
+                <p style="font-size: 13px; color: #6D675F; margin-top: 30px; border-top: 1px solid #D8CEBD; padding-top: 20px; text-align: center;">
+                    Connecting talent with opportunity &bull; InternHub
+                </p>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

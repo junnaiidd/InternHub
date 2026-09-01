@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+{% block title %}Create Account — InternHub{% endblock %}
+
+{% block public_content %}
+<div class="auth-split-wrapper fade-in-up">
+    <div class="auth-card-block" style="max-width: 1020px;">
+        <div class="row g-0 align-items-stretch">
+            
+            <!-- Left Hero Panel -->
+            <div class="col-lg-5 auth-left-hero">
+                <div>
+                    <div class="d-flex align-items-center gap-2 mb-4">
+                        <div class="logo-ribbon-icon">
+                            <i class="bi bi-intersect"></i>
+                        </div>
+                        <span class="fs-4 fw-bold text-white">InternHub</span>
+                    </div>
+                    <h2 class="fw-bold text-white mb-3" style="font-size: 2rem; line-height: 1.2;">Join the Student Network.</h2>
+                    <p class="text-light small">
+                        Create an account to submit internship applications, save opportunities, or recruit top computer science talent.
+                    </p>
+                </div>
+
+                <div class="mt-4 pt-3 border-top border-secondary">
+                    <div class="d-flex align-items-center gap-2 small text-light mb-2">
+                        <i class="bi bi-mortarboard-fill text-info"></i>
+                        <span>Student Portfolios & Verified Skills</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2 small text-light">
+                        <i class="bi bi-building text-warning"></i>
+                        <span>Recruiter Tools & Candidate Dossiers</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Form Panel -->
+            <div class="col-lg-7 auth-right-form">
+                <div class="mb-4">
+                    <h3 class="fw-bold mb-1">Create Account</h3>
+                    <p class="text-muted small">Choose your account type to configure your workspace</p>
+                </div>
+
+                <form method="POST" action="{{ url_for('register') }}" id="registerForm" novalidate>
+                    
+                    <!-- Account Type Selector -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold small d-block mb-2">Account Role</label>
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <div class="p-3 border rounded-3 text-start cursor-pointer card-hoverable" id="roleCardStudent" onclick="selectRole('student')" style="background: var(--blue-soft); border-color: var(--blue) !important; cursor: pointer;">
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <i class="bi bi-mortarboard-fill fs-5" style="color: var(--blue);"></i>
+                                        <strong class="text-dark">Student</strong>
+                                    </div>
+                                    <small class="text-muted d-block" style="font-size: 0.72rem;">Apply for internships</small>
+                                    <input type="radio" name="role" value="student" id="role_student" class="d-none" checked>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="p-3 border rounded-3 text-start cursor-pointer card-hoverable" id="roleCardCompany" onclick="selectRole('company')" style="background: var(--surface); cursor: pointer;">
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <i class="bi bi-building fs-5" style="color: var(--purple);"></i>
+                                        <strong class="text-dark">Company</strong>
+                                    </div>
+                                    <small class="text-muted d-block" style="font-size: 0.72rem;">Post listings & recruit</small>
+                                    <input type="radio" name="role" value="company" id="role_company" class="d-none">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Email & Password Inputs -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-12">
+                            <label class="form-label fw-bold small" for="email">Email Address *</label>
+                            <input type="email" class="form-control" id="email" name="email"
+                                   placeholder="name@university.edu or name@company.com" value="{{ request.form.get('email', '') }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small" for="password">Password *</label>
+                            <input type="password" class="form-control" id="password" name="password"
+                                   placeholder="Min 6 characters" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small" for="confirm_password">Confirm Password *</label>
+                            <input type="password" class="form-control" id="confirm_password" name="confirm_password"
+                                   placeholder="Re-enter password" required>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Student Fields -->
+                    <div id="studentFields" class="p-3 mb-4 rounded-3 border bg-light">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small" for="full_name">Full Name *</label>
+                            <input type="text" class="form-control" id="full_name" name="full_name"
+                                   placeholder="e.g. Alex Chen" value="{{ request.form.get('full_name', '') }}">
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small" for="college">University / Institute</label>
+                                <input type="text" class="form-control" id="college" name="college"
+                                       placeholder="e.g. NIT / IIT / University" value="{{ request.form.get('college', '') }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small" for="degree">Degree & Branch</label>
+                                <input type="text" class="form-control" id="degree" name="degree"
+                                       placeholder="e.g. B.Tech Computer Science" value="{{ request.form.get('degree', '') }}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Company Fields -->
+                    <div id="companyFields" class="p-3 mb-4 rounded-3 border bg-light d-none">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small" for="company_name">Company Name *</label>
+                            <input type="text" class="form-control" id="company_name" name="company_name"
+                                   placeholder="e.g. TechCorp Innovations" value="{{ request.form.get('company_name', '') }}">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label fw-bold small" for="industry">Industry / Domain</label>
+                            <input type="text" class="form-control" id="industry" name="industry"
+                                   placeholder="e.g. Cloud & AI Systems" value="{{ request.form.get('industry', '') }}">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-tech-primary w-100 py-2 mb-3 shadow-sm justify-content-center">
+                        <i class="bi bi-check-circle-fill"></i>Complete Registration
+                    </button>
+                </form>
+
+                <div class="text-center my-3 position-relative">
+                    <hr class="border-secondary-subtle">
+                    <span class="position-absolute top-50 start-50 translate-middle px-3 small text-muted bg-white">
+                        Already have an account?
+                    </span>
+                </div>
+
+                <a href="{{ url_for('login') }}" class="btn-tech-outline w-100 justify-content-center">
+                    Sign In to Existing Account
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+function selectRole(role) {
+    const studentRadio = document.getElementById('role_student');
+    const companyRadio = document.getElementById('role_company');
+    const studentCard = document.getElementById('roleCardStudent');
+    const companyCard = document.getElementById('roleCardCompany');
+    const studentFields = document.getElementById('studentFields');
+    const companyFields = document.getElementById('companyFields');
+
+    if (role === 'student') {
+        studentRadio.checked = true;
+        studentCard.style.background = 'var(--blue-soft)';
+        studentCard.style.borderColor = 'var(--blue)';
+        companyCard.style.background = 'var(--surface)';
+        companyCard.style.borderColor = 'var(--border)';
+        studentFields.classList.remove('d-none');
+        companyFields.classList.add('d-none');
+    } else {
+        companyRadio.checked = true;
+        companyCard.style.background = 'var(--purple-soft)';
+        companyCard.style.borderColor = 'var(--purple)';
+        studentCard.style.background = 'var(--surface)';
+        studentCard.style.borderColor = 'var(--border)';
+        companyFields.classList.remove('d-none');
+        studentFields.classList.add('d-none');
+    }
+}
+</script>
+{% endblock %}
+
+{% block content %}{% block content_unauth %}{% endblock %}{% endblock %}

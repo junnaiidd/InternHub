@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% block title %}Saved Opportunities — InternHub{% endblock %}
+
+{% block content %}
+<div class="fade-in-up">
+
+    <!-- Header & Back Link -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 pb-2 border-bottom">
+        <div>
+            <h2 class="fw-bold mb-1">Saved Opportunities Library</h2>
+            <p class="text-muted small mb-0">Internships you have bookmarked to research and apply to before deadlines.</p>
+        </div>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-sm btn-tech-outline">
+            <i class="bi bi-arrow-left me-1"></i>Back to Dashboard
+        </a>
+    </div>
+
+    {% if internships %}
+        <div class="row g-4 mb-5">
+            {% for job in internships %}
+            <div class="col-md-6 col-12">
+                <div class="bento-card h-100 d-flex flex-column">
+                    
+                    <!-- Header & Bookmark -->
+                    <div class="d-flex justify-content-between align-items-start mb-3 gap-3">
+                        <div class="d-flex gap-3 align-items-center">
+                            <div class="activity-icon-badge activity-icon-purple" style="width: 44px; height: 44px; font-size: 1.15rem;">
+                                {{ job.company_name[0].upper() }}
+                            </div>
+                            <div>
+                                <h5 class="fw-bold mb-0" style="font-size: 1.15rem;">{{ job.title }}</h5>
+                                <a href="{{ url_for('company_profile', company_id=job.company_id) }}" class="text-muted small fw-semibold">
+                                    <i class="bi bi-building me-1"></i>{{ job.company_name }}
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <!-- Unsave Button -->
+                        <a href="{{ url_for('toggle_save', internship_id=job.id) }}"
+                           class="btn btn-sm btn-tech-outline p-2 rounded-circle"
+                           style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;"
+                           title="Remove from saved library">
+                            <i class="bi bi-bookmark-heart-fill text-danger fs-5"></i>
+                        </a>
+                    </div>
+
+                    <!-- Details Tags -->
+                    <div class="d-flex flex-wrap gap-2 mb-3">
+                        <span class="badge bg-light text-dark border"><i class="bi bi-geo-alt me-1 text-primary"></i>{{ job.location or 'Remote' }}</span>
+                        <span class="badge bg-light text-dark border"><i class="bi bi-clock me-1 text-warning"></i>{{ job.duration or 'Not specified' }}</span>
+                        <span class="badge bg-success-subtle text-success fw-bold"><i class="bi bi-currency-rupee me-1"></i>{{ job.stipend or 'Unpaid' }}</span>
+                    </div>
+
+                    <p class="text-secondary small mb-3 flex-grow-1" style="line-height: 1.6;">
+                        {{ job.description[:140] }}{% if job.description|length > 140 %}...{% endif %}
+                    </p>
+
+                    <!-- Footer Actions -->
+                    <div class="d-flex align-items-center justify-content-between pt-3 mt-auto border-top">
+                        <span class="text-muted small">
+                            <i class="bi bi-calendar3 me-1"></i>Deadline: {{ job.deadline.strftime('%d %b %Y') if job.deadline else 'Rolling' }}
+                        </span>
+                        <a href="{{ url_for('apply', internship_id=job.id) }}" class="btn-tech-primary py-1 px-3" style="font-size: 0.85rem;">
+                            Apply Now
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="bento-card p-5 text-center my-4">
+            <i class="bi bi-bookmark-heart display-2 text-muted opacity-25 d-block mb-3"></i>
+            <h4 class="fw-bold mb-2">Your Saved Library is Empty</h4>
+            <p class="text-muted mb-4">You haven't bookmarked any internship listings yet. Explore listings and tap the bookmark icon to save.</p>
+            <a href="{{ url_for('internships') }}" class="btn-tech-primary mx-auto">
+                <i class="bi bi-search me-1"></i>Browse Openings
+            </a>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

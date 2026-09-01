@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+{% block title %}Applicants — {{ internship.title }} | InternHub{% endblock %}
+
+{% block content %}
+<div class="fade-in-up">
+
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 pb-2 border-bottom">
+        <div>
+            <h2 class="fw-bold mb-1">Applications for "{{ internship.title }}"</h2>
+            <p class="text-muted small mb-0">
+                Review candidate dossiers and update their status. Total applicants: <strong>{{ applications | length }}</strong>
+            </p>
+        </div>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-sm btn-tech-outline">
+            <i class="bi bi-arrow-left me-1"></i>Back to Dashboard
+        </a>
+    </div>
+
+    {% if applications %}
+        <div class="row g-4 mb-5">
+            {% for app in applications %}
+            <div class="col-md-6 col-12">
+                <div class="bento-card h-100 d-flex flex-column">
+
+                    <!-- Candidate Header -->
+                    <div class="d-flex justify-content-between align-items-start mb-3 gap-2">
+                        <div class="d-flex gap-3 align-items-center">
+                            <div class="activity-icon-badge activity-icon-purple" style="width: 44px; height: 44px; font-size: 1.1rem; font-weight: 700;">
+                                {{ (app.full_name or '?')[0].upper() }}
+                            </div>
+                            <div>
+                                <h5 class="fw-bold mb-0">{{ app.full_name or 'Unknown Applicant' }}</h5>
+                                <div class="d-flex flex-wrap gap-2 align-items-center">
+                                    <span class="text-muted small">{{ app.college or 'University not listed' }}</span>
+                                    {% if app.cgpa %}
+                                        <span class="badge bg-success-subtle text-success fw-bold">GPA {{ app.cgpa }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <span class="status-badge status-{{ app.status }}">
+                            {{ app.status.capitalize() }}
+                        </span>
+                    </div>
+
+                    <!-- Candidate Info Grid -->
+                    <div class="d-flex flex-column gap-2 small text-muted mb-3">
+                        {% if app.degree %}
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-mortarboard text-primary"></i>
+                            <span>{{ app.degree }}</span>
+                        </div>
+                        {% endif %}
+                        {% if app.phone %}
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-telephone text-secondary"></i>
+                            <span>{{ app.phone }}</span>
+                        </div>
+                        {% endif %}
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-calendar3 text-muted"></i>
+                            <span>Applied {{ app.applied_at.strftime('%d %b %Y') }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Skills -->
+                    {% if app.skills %}
+                    <div class="d-flex flex-wrap gap-1 mb-3">
+                        {% for skill in app.skills.split(',')[:5] %}
+                            <span class="badge bg-secondary-subtle text-secondary" style="font-size: 0.7rem;">{{ skill.strip() }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <!-- Cover Letter Preview -->
+                    {% if app.cover_letter %}
+                    <div class="p-3 rounded-3 small mb-3 bg-light border-start border-3 border-primary flex-grow-1" style="line-height: 1.6;">
+                        <strong class="text-uppercase d-block mb-1 text-muted" style="font-size: 0.65rem;">Cover Note</strong>
+                        "{{ app.cover_letter[:100] }}{% if app.cover_letter|length > 100 %}...{% endif %}"
+                    </div>
+                    {% endif %}
+
+                    <!-- Resume Link -->
+                    {% if app.resume_link %}
+                    <div class="mb-3">
+                        <a href="/{{ app.resume_link }}" target="_blank" class="btn btn-sm btn-tech-outline w-100">
+                            <i class="bi bi-file-earmark-pdf-fill text-danger me-1"></i>View Resume PDF
+                        </a>
+                    </div>
+                    {% endif %}
+
+                    <!-- Portfolio Links -->
+                    {% if app.portfolio_links %}
+                    <div class="mb-3">
+                        <small class="text-muted text-uppercase fw-bold d-block mb-1">Portfolio</small>
+                        <a href="{{ app.portfolio_links }}" target="_blank" class="small text-primary text-truncate d-block">
+                            <i class="bi bi-link-45deg me-1"></i>{{ app.portfolio_links[:45] }}
+                        </a>
+                    </div>
+                    {% endif %}
+
+                    <!-- Status Action Buttons -->
+                    <div class="border-top pt-3 mt-auto">
+                        {% if app.status == 'pending' %}
+                        <div class="d-flex gap-2">
+                            <a href="{{ url_for('update_application', app_id=app.id, new_status='accepted') }}"
+                               class="btn btn-sm flex-fill justify-content-center"
+                               style="background: #35A58A; color: #fff; border-radius: 8px; display: flex; align-items: center; gap: 6px; font-weight: 600; text-decoration: none;">
+                                <i class="bi bi-check-circle-fill"></i>Accept
+                            </a>
+                            <a href="{{ url_for('update_application', app_id=app.id, new_status='rejected') }}"
+                               class="btn btn-sm flex-fill justify-content-center"
+                               style="background: #F0645A; color: #fff; border-radius: 8px; display: flex; align-items: center; gap: 6px; font-weight: 600; text-decoration: none;">
+                                <i class="bi bi-x-circle-fill"></i>Decline
+                            </a>
+                        </div>
+                        {% elif app.status == 'accepted' %}
+                        <div class="d-flex gap-2 align-items-center justify-content-between">
+                            <span class="badge bg-success-subtle text-success px-3 py-2 fw-bold">
+                                <i class="bi bi-person-check-fill me-1"></i>Offer Extended
+                            </span>
+                            <a href="{{ url_for('update_application', app_id=app.id, new_status='pending') }}"
+                               class="btn btn-sm btn-tech-outline small text-muted">
+                                Revert to Review
+                            </a>
+                        </div>
+                        {% else %}
+                        <div class="d-flex gap-2 align-items-center justify-content-between">
+                            <span class="badge bg-danger-subtle text-danger px-3 py-2 fw-bold">
+                                <i class="bi bi-archive-fill me-1"></i>Archived
+                            </span>
+                            <a href="{{ url_for('update_application', app_id=app.id, new_status='pending') }}"
+                               class="btn btn-sm btn-tech-outline small text-muted">
+                                Reopen Review
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="bento-card p-5 text-center my-4">
+            <i class="bi bi-inbox display-2 text-muted opacity-25 d-block mb-3"></i>
+            <h4 class="fw-bold mb-2">No Applications Received Yet</h4>
+            <p class="text-muted mb-0">Applications submitted for this position will appear here automatically.</p>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

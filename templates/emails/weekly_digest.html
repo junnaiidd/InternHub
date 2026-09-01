@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Weekly Internship Match Digest</title>
+</head>
+<body style="font-family: 'Manrope', 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #FAF7F2; color: #252422; margin: 0; padding: 20px; line-height: 1.6;">
+    <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #ffffff; border: 1px solid #D8CEBD; border-radius: 16px; padding: 40px; box-shadow: 0 4px 16px rgba(37,28,10,.04);">
+        <tr>
+            <td>
+                <!-- Logo -->
+                <div style="font-size: 24px; font-weight: bold; color: #252422; letter-spacing: -0.03em; margin-bottom: 30px; border-bottom: 1px solid #D8CEBD; padding-bottom: 20px;">
+                    <span style="color: #C85C27;">★</span> InternHub
+                </div>
+                
+                <!-- Headline -->
+                <span style="background-color: #F6E3D4; color: #C85C27; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 12px; border-radius: 999px; display: inline-block; margin-bottom: 15px;">MATCH DIGEST</span>
+                <h2 style="font-size: 22px; font-weight: 700; color: #252422; margin-top: 0; margin-bottom: 15px; letter-spacing: -0.02em;">Fresh Opportunities For You</h2>
+                
+                <p style="font-size: 15px; color: #6D675F; margin-bottom: 25px;">Hello {{ name }},</p>
+                
+                <p style="font-size: 15px; color: #252422; margin-bottom: 25px;">
+                    We found some exciting active internship listings on InternHub that match your background. Take a look and submit your applications today!
+                </p>
+                
+                <!-- Listings Loop -->
+                {% if internships %}
+                    {% for job in internships %}
+                    <div style="background-color: #FAF7F2; border-radius: 12px; padding: 20px; margin-bottom: 20px; border: 1px solid #D8CEBD; transition: transform 0.2s;">
+                        <h3 style="font-size: 16px; font-weight: 700; color: #252422; margin-top: 0; margin-bottom: 6px;">{{ job.title }}</h3>
+                        <p style="font-size: 13px; color: #C85C27; font-weight: bold; margin: 0 0 10px 0;">🏢 {{ job.company_name }}</p>
+                        
+                        <table border="0" cellpadding="0" cellspacing="0" width="100%" style="font-size: 12px; color: #6D675F; margin-bottom: 15px;">
+                            <tr>
+                                <td width="50%">📍 <strong>Location:</strong> {{ job.location or '—' }}</td>
+                                <td>💰 <strong>Stipend:</strong> {{ job.stipend or '—' }}</td>
+                            </tr>
+                        </table>
+                        
+                        <a href="http://127.0.0.1:5000/apply/{{ job.id }}" style="font-size: 13px; font-weight: bold; color: #C85C27; text-decoration: none; display: inline-block;">
+                            Apply Now &rarr;
+                        </a>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p style="font-style: italic; color: #6D675F; text-align: center; margin: 30px 0;">
+                        No new matching listings this week. Make sure to update your profile skills to get more relevant matches!
+                    </p>
+                {% endif %}
+                
+                <!-- CTA -->
+                <div style="text-align: center; margin-top: 30px; margin-bottom: 30px;">
+                    <a href="http://127.0.0.1:5000/internships" style="background-color: #C85C27; color: #ffffff !important; text-decoration: none; padding: 12px 30px; font-size: 14px; font-weight: bold; border-radius: 999px; display: inline-block; box-shadow: 0 4px 12px rgba(200,92,39,.25);">
+                        Browse All Listings
+                    </a>
+                </div>
+                
+                <p style="font-size: 13px; color: #6D675F; margin-top: 30px; border-top: 1px solid #D8CEBD; padding-top: 20px; text-align: center;">
+                    Connecting talent with opportunity &bull; InternHub
+                </p>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

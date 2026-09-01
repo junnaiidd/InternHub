@@ -1,0 +1,657 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard — InternHub Platform{% endblock %}
+
+{% block content %}
+<div class="fade-in-up">
+
+    <!-- ================================================================
+         1. ADMIN DASHBOARD (EXACT REFERENCE COMPOSITION)
+    ================================================================ -->
+    {% if session.get('role') == 'admin' %}
+
+    <!-- Top Greeting -->
+    <div class="mb-4">
+        <h1 class="fw-bold mb-1" style="font-size: 2.2rem; letter-spacing: -0.03em;">Good evening, Admin.</h1>
+        <p class="text-muted mb-0">Here's what's happening across InternHub today.</p>
+    </div>
+
+    <!-- 4 Hero Stat Cards (Color-Blocked with Sparklines) -->
+    <div class="stat-hero-grid">
+        
+        <!-- Students Card (Electric Blue) -->
+        <a href="{{ url_for('admin_users') }}" class="stat-hero-card card-blue">
+            <div class="stat-card-top">
+                <span class="stat-label-title">STUDENTS</span>
+                <div class="stat-icon-circle">
+                    <i class="bi bi-mortarboard-fill"></i>
+                </div>
+            </div>
+            <div class="stat-card-bottom">
+                <div class="stat-hero-number">{{ student_count }}</div>
+                <div class="stat-sparkline-box">
+                    <span class="stat-trend-tag">+{{ student_count }}</span>
+                    <svg class="sparkline-svg" viewBox="0 0 80 28">
+                        <path d="M2,24 Q20,12 35,18 T60,8 T78,4" />
+                    </svg>
+                </div>
+            </div>
+        </a>
+
+        <!-- Companies Card (Royal Purple) -->
+        <a href="{{ url_for('admin_users') }}" class="stat-hero-card card-purple">
+            <div class="stat-card-top">
+                <span class="stat-label-title">COMPANIES</span>
+                <div class="stat-icon-circle">
+                    <i class="bi bi-building"></i>
+                </div>
+            </div>
+            <div class="stat-card-bottom">
+                <div class="stat-hero-number">{{ company_count }}</div>
+                <div class="stat-sparkline-box">
+                    <span class="stat-trend-tag">+{{ company_count }}</span>
+                    <svg class="sparkline-svg" viewBox="0 0 80 28">
+                        <path d="M2,22 Q25,8 45,20 T78,6" />
+                    </svg>
+                </div>
+            </div>
+        </a>
+
+        <!-- Active Listings Card (Warm Orange) -->
+        <a href="{{ url_for('admin_internships') }}" class="stat-hero-card card-orange">
+            <div class="stat-card-top">
+                <span class="stat-label-title">ACTIVE LISTINGS</span>
+                <div class="stat-icon-circle">
+                    <i class="bi bi-briefcase-fill"></i>
+                </div>
+            </div>
+            <div class="stat-card-bottom">
+                <div class="stat-hero-number">{{ active_internships }}</div>
+                <div class="stat-sparkline-box">
+                    <span class="stat-trend-tag">+{{ active_internships }}</span>
+                    <svg class="sparkline-svg" viewBox="0 0 80 28">
+                        <path d="M2,20 Q18,24 38,10 T60,18 T78,6" />
+                    </svg>
+                </div>
+            </div>
+        </a>
+
+        <!-- Applications Card (Coral) -->
+        <a href="{{ url_for('admin_internships') }}" class="stat-hero-card card-coral">
+            <div class="stat-card-top">
+                <span class="stat-label-title">APPLICATIONS</span>
+                <div class="stat-icon-circle">
+                    <i class="bi bi-send-fill"></i>
+                </div>
+            </div>
+            <div class="stat-card-bottom">
+                <div class="stat-hero-number">{{ total_applications }}</div>
+                <div class="stat-sparkline-box">
+                    <span class="stat-trend-tag">+{{ total_applications }}</span>
+                    <svg class="sparkline-svg" viewBox="0 0 80 28">
+                        <path d="M2,26 Q20,18 40,22 T65,8 T78,4" />
+                    </svg>
+                </div>
+            </div>
+        </a>
+
+    </div>
+
+    <!-- Quick Action Horizontal Pill Strip (Matching Reference) -->
+    <div class="action-pill-strip">
+        <a href="{{ url_for('admin_users') }}" class="btn-action-pill pill-blue">
+            <i class="bi bi-people-fill"></i>Manage Users
+        </a>
+        <a href="{{ url_for('admin_internships') }}" class="btn-action-pill pill-purple">
+            <i class="bi bi-briefcase-fill"></i>Manage Internships
+        </a>
+        <a href="{{ url_for('trigger_weekly_digest') }}" class="btn-action-pill pill-dark">
+            <i class="bi bi-envelope-paper-fill"></i>Digest
+        </a>
+        <a href="{{ url_for('trigger_deadline_alerts') }}" class="btn-action-pill pill-coral">
+            <i class="bi bi-bell-fill"></i>Alerts
+        </a>
+    </div>
+
+    <!-- Main Dashboard Grid Layout (Left Bento + Right Information Blocks) -->
+    <div class="dashboard-grid-layout">
+        
+        <!-- Left Side Bento Container -->
+        <div class="d-flex flex-column gap-4">
+            
+            <!-- Row 1: Charts (User Distribution & Application Status) -->
+            <div class="row g-4">
+                
+                <!-- Chart 1: User Distribution -->
+                <div class="col-lg-6 col-12">
+                    <div class="bento-card h-100">
+                        <div class="bento-card-header">
+                            <h5 class="bento-title mb-0">User Distribution</h5>
+                            <div class="d-flex gap-3 small fw-bold">
+                                <span class="d-flex align-items-center gap-1" style="color: var(--teal);">
+                                    <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--teal); display: inline-block;"></span> Student
+                                </span>
+                                <span class="d-flex align-items-center gap-1" style="color: var(--purple);">
+                                    <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--purple); display: inline-block;"></span> Company
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Smooth Wave Area Visualization -->
+                        <div class="chart-area-container">
+                            <svg viewBox="0 0 300 120" style="width: 100%; height: 100%; overflow: visible;">
+                                <defs>
+                                    <linearGradient id="gradTeal" x1="0%" y1="0%" x2="0%" y2="100%">
+                                        <stop offset="0%" stop-color="#35A58A" stop-opacity="0.45" />
+                                        <stop offset="100%" stop-color="#35A58A" stop-opacity="0.02" />
+                                    </linearGradient>
+                                    <linearGradient id="gradPurple" x1="0%" y1="0%" x2="0%" y2="100%">
+                                        <stop offset="0%" stop-color="#7353E8" stop-opacity="0.45" />
+                                        <stop offset="100%" stop-color="#7353E8" stop-opacity="0.02" />
+                                    </linearGradient>
+                                </defs>
+                                <!-- Grid Lines -->
+                                <line x1="0" y1="30" x2="300" y2="30" stroke="var(--border)" stroke-dasharray="3,3" />
+                                <line x1="0" y1="70" x2="300" y2="70" stroke="var(--border)" stroke-dasharray="3,3" />
+                                <line x1="0" y1="110" x2="300" y2="110" stroke="var(--border)" />
+                                
+                                <!-- Student Area & Curve -->
+                                <path d="M0,90 Q40,60 80,75 T160,25 T240,65 T300,35 L300,110 L0,110 Z" fill="url(#gradTeal)" />
+                                <path d="M0,90 Q40,60 80,75 T160,25 T240,65 T300,35" fill="none" stroke="#35A58A" stroke-width="3" />
+                                
+                                <!-- Company Area & Curve -->
+                                <path d="M0,105 Q50,95 100,100 T180,50 T250,85 T300,60 L300,110 L0,110 Z" fill="url(#gradPurple)" />
+                                <path d="M0,105 Q50,95 100,100 T180,50 T250,85 T300,60" fill="none" stroke="#7353E8" stroke-width="3" />
+                            </svg>
+                        </div>
+                        <div class="d-flex justify-content-between text-muted small mt-2" style="font-size: 0.72rem;">
+                            <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart 2: Application Status (Bar Chart) -->
+                <div class="col-lg-6 col-12">
+                    <div class="bento-card h-100">
+                        <div class="bento-card-header">
+                            <h5 class="bento-title mb-0">Application Status</h5>
+                        </div>
+
+                        <div class="chart-bars-container">
+                            <div class="bar-col">
+                                <span class="bar-val">{{ total_applications }}</span>
+                                <div class="bar-pill bar-teal" style="height: 85%;"></div>
+                                <span class="bar-lbl">Applied</span>
+                            </div>
+                            <div class="bar-col">
+                                <span class="bar-val">{{ app_status_counts | selectattr('status', 'equalto', 'pending') | map(attribute='cnt') | first or 0 }}</span>
+                                <div class="bar-pill bar-blue" style="height: 55%;"></div>
+                                <span class="bar-lbl">Reviewing</span>
+                            </div>
+                            <div class="bar-col">
+                                <span class="bar-val">{{ app_status_counts | selectattr('status', 'equalto', 'accepted') | map(attribute='cnt') | first or 0 }}</span>
+                                <div class="bar-pill bar-yellow" style="height: 42%;"></div>
+                                <span class="bar-lbl">Offer</span>
+                            </div>
+                            <div class="bar-col">
+                                <span class="bar-val">{{ app_status_counts | selectattr('status', 'equalto', 'rejected') | map(attribute='cnt') | first or 0 }}</span>
+                                <div class="bar-pill bar-coral" style="height: 28%;"></div>
+                                <span class="bar-lbl">Declined</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Recent Activity List Block -->
+            <div class="bento-card">
+                <div class="bento-card-header">
+                    <h5 class="bento-title mb-0">Recent Activity</h5>
+                    <a href="{{ url_for('admin_users') }}" class="btn btn-sm btn-tech-outline">View All</a>
+                </div>
+
+                <div class="activity-list">
+                    <div class="activity-item">
+                        <div class="activity-icon-badge activity-icon-teal">
+                            <i class="bi bi-briefcase-fill"></i>
+                        </div>
+                        <div class="activity-content flex-grow-1">
+                            <h6>New internship posted</h6>
+                            <p>Engineering listings &bull; Active in network</p>
+                        </div>
+                        <span class="badge bg-light text-muted border">Live</span>
+                    </div>
+
+                    <div class="activity-item">
+                        <div class="activity-icon-badge activity-icon-coral">
+                            <i class="bi bi-file-earmark-text-fill"></i>
+                        </div>
+                        <div class="activity-content flex-grow-1">
+                            <h6>Application received</h6>
+                            <p>Candidate submitted dossier to company</p>
+                        </div>
+                        <span class="badge bg-light text-muted border">Recent</span>
+                    </div>
+
+                    <div class="activity-item">
+                        <div class="activity-icon-badge activity-icon-purple">
+                            <i class="bi bi-building"></i>
+                        </div>
+                        <div class="activity-content flex-grow-1">
+                            <h6>Company registered</h6>
+                            <p>Partner verified on platform</p>
+                        </div>
+                        <span class="badge bg-light text-muted border">Verified</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Right Side Information Column (Matching Reference) -->
+        <div class="d-flex flex-column gap-3">
+            
+            <!-- Panel 1: TODAY ON INTERNHUB -->
+            <div class="side-panel-card">
+                <div class="side-panel-title">TODAY ON INTERNHUB</div>
+                <div class="today-tags-list">
+                    <div class="today-tag-row">
+                        <div class="today-tag-pill tag-yellow"><i class="bi bi-stickies-fill"></i></div>
+                        <span>Applications Submitted</span>
+                    </div>
+                    <div class="today-tag-row">
+                        <div class="today-tag-pill tag-mint"><i class="bi bi-mortarboard-fill"></i></div>
+                        <span>Internships Active</span>
+                    </div>
+                    <div class="today-tag-row">
+                        <div class="today-tag-pill tag-lavender"><i class="bi bi-building-fill"></i></div>
+                        <span>Companies Onboarded</span>
+                    </div>
+                    <div class="today-tag-row">
+                        <div class="today-tag-pill tag-orange"><i class="bi bi-file-earmark-check-fill"></i></div>
+                        <span>Active Review Pipeline</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel 2: UPCOMING DEADLINES -->
+            <div class="side-panel-card">
+                <div class="side-panel-title">UPCOMING DEADLINES</div>
+                <div class="deadline-items-list">
+                    <div class="deadline-row">
+                        <div class="deadline-date-box">15</div>
+                        <div class="deadline-info">
+                            <div class="deadline-name">Cloud Systems (Sep 15)</div>
+                            <div class="deadline-bar">
+                                <div class="deadline-progress-fill" style="width: 75%; background: var(--blue);"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="deadline-row">
+                        <div class="deadline-date-box">20</div>
+                        <div class="deadline-info">
+                            <div class="deadline-name">AI & Data Science (Sep 20)</div>
+                            <div class="deadline-bar">
+                                <div class="deadline-progress-fill" style="width: 50%; background: var(--purple);"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="deadline-row">
+                        <div class="deadline-date-box">05</div>
+                        <div class="deadline-info">
+                            <div class="deadline-name">Full-Stack Web (Oct 5)</div>
+                            <div class="deadline-bar">
+                                <div class="deadline-progress-fill" style="width: 30%; background: var(--orange);"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel 3: FEATURE BANNER -->
+            <div class="feature-banner-card">
+                <div class="side-panel-title text-uppercase" style="color: var(--blue);">FEATURE PANEL</div>
+                <h5 class="feature-banner-title">Empower growth.</h5>
+                <p class="small text-muted mb-0">Make your work matter.</p>
+                
+                <!-- Modern Graphic Accent -->
+                <div class="p-3 my-3 rounded-3 text-center" style="background: linear-gradient(135deg, #111936 0%, #1A244D 100%); color: #FFFFFF;">
+                    <i class="bi bi-laptop display-4 text-info d-block mb-2"></i>
+                    <span class="small fw-bold">InternHub Network &bull; 2026</span>
+                </div>
+
+                <div class="feature-quote">
+                    <i class="bi bi-stars text-warning me-1"></i>Seize the day.
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================================
+         2. STUDENT DASHBOARD (PERSONAL CAREER WORKSPACE)
+    ================================================================ -->
+    {% elif session.get('role') == 'student' %}
+
+    <div class="mb-4">
+        <h1 class="fw-bold mb-1" style="font-size: 2.2rem; letter-spacing: -0.03em;">Welcome back, {{ student.full_name }}</h1>
+        <p class="text-muted mb-0">Track applications, saved opportunities, and recommended engineering roles.</p>
+    </div>
+
+    <!-- 4 Hero Stat Cards -->
+    <div class="stat-hero-grid">
+        <a href="{{ url_for('student_applications') }}" class="stat-hero-card card-blue">
+            <div class="stat-card-top">
+                <span class="stat-label-title">TOTAL APPLIED</span>
+                <div class="stat-icon-circle"><i class="bi bi-send-fill"></i></div>
+            </div>
+            <div class="stat-card-bottom">
+                <div class="stat-hero-number">{{ applications|length }}</div>
+                <div class="stat-sparkline-box">
+                    <span class="stat-trend-tag">Active</span>
+                    <svg class="sparkline-svg" viewBox="0 0 80 28"><path d="M2,24 Q20,12 35,18 T60,8 T78,4" /></svg>
+                </div>
+            </div>
+        </a>
+
+        <a href="{{ url_for('student_applications', status='accepted') }}" class="stat-hero-card card-teal">
+            <div class="stat-card-top">
+                <span class="stat-label-title">ACCEPTED OFFERS</span>
+                <div class="stat-icon-circle"><i class="bi bi-check-circle-fill"></i></div>
+            </div>
+            <div class="stat-card-bottom">
+                <div class="stat-hero-number">{{ applications | selectattr('status', 'equalto', 'accepted') | list | length }}</div>
+                <div class="stat-sparkline-box">
+                    <span class="stat-trend-tag">Offers</span>
+                    <svg class="sparkline-svg" viewBox="0 0 80 28"><path d="M2,22 Q25,8 45,20 T78,6" /></svg>
+                </div>
+            </div>
+        </a>
+
+        <a href="{{ url_for('student_applications', status='pending') }}" class="stat-hero-card card-orange">
+            <div class="stat-card-top">
+                <span class="stat-label-title">UNDER REVIEW</span>
+                <div class="stat-icon-circle"><i class="bi bi-hourglass-split"></i></div>
+            </div>
+            <div class="stat-card-bottom">
+                <div class="stat-hero-number">{{ applications | selectattr('status', 'equalto', 'pending') | list | length }}</div>
+                <div class="stat-sparkline-box">
+                    <span class="stat-trend-tag">Pending</span>
+                    <svg class="sparkline-svg" viewBox="0 0 80 28"><path d="M2,20 Q18,24 38,10 T60,18 T78,6" /></svg>
+                </div>
+            </div>
+        </a>
+
+        <a href="{{ url_for('saved_internships') }}" class="stat-hero-card card-purple">
+            <div class="stat-card-top">
+                <span class="stat-label-title">SAVED LIBRARY</span>
+                <div class="stat-icon-circle"><i class="bi bi-bookmark-heart-fill"></i></div>
+            </div>
+            <div class="stat-card-bottom">
+                <div class="stat-hero-number"><i class="bi bi-bookmark"></i></div>
+                <div class="stat-sparkline-box">
+                    <span class="stat-trend-tag">Library</span>
+                    <svg class="sparkline-svg" viewBox="0 0 80 28"><path d="M2,26 Q20,18 40,22 T65,8 T78,4" /></svg>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <!-- Quick Action Pills -->
+    <div class="action-pill-strip">
+        <a href="{{ url_for('internships') }}" class="btn-action-pill pill-blue">
+            <i class="bi bi-search"></i>Explore Openings
+        </a>
+        <a href="{{ url_for('saved_internships') }}" class="btn-action-pill pill-purple">
+            <i class="bi bi-bookmark-check"></i>Saved Library
+        </a>
+        <a href="{{ url_for('student_applications') }}" class="btn-action-pill pill-dark">
+            <i class="bi bi-journal-text"></i>All Applications
+        </a>
+        <a href="{{ url_for('edit_profile') }}" class="btn-action-pill pill-coral">
+            <i class="bi bi-person-gear"></i>Edit Profile
+        </a>
+    </div>
+
+    <!-- Student Bento Grid -->
+    <div class="dashboard-grid-layout">
+        
+        <!-- Left: Applications Table -->
+        <div class="bento-card">
+            <div class="bento-card-header">
+                <h5 class="bento-title mb-0">My Applications Ledger</h5>
+                <a href="{{ url_for('student_applications') }}" class="btn btn-sm btn-tech-outline">View All</a>
+            </div>
+
+            {% if applications %}
+            <div class="table-responsive">
+                <table class="table-custom">
+                    <thead>
+                        <tr>
+                            <th>Position & Company</th>
+                            <th>Applied Date</th>
+                            <th>Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for app in applications %}
+                        <tr>
+                            <td>
+                                <div class="fw-bold">{{ app.title }}</div>
+                                <small class="text-muted">{{ app.company_name }} &bull; {{ app.location or 'Remote' }}</small>
+                            </td>
+                            <td><span class="mono-metric small text-muted">{{ app.applied_at.strftime('%d %b %Y') }}</span></td>
+                            <td>
+                                <span class="status-badge status-{{ app.status }}">
+                                    {{ app.status.capitalize() }}
+                                </span>
+                            </td>
+                            <td class="text-end">
+                                <a href="{{ url_for('student_applications') }}" class="btn btn-sm btn-tech-outline">
+                                    View
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5 text-muted">
+                <i class="bi bi-send display-4 d-block mb-3 opacity-50"></i>
+                <p class="mb-3">You haven't submitted any internship applications yet.</p>
+                <a href="{{ url_for('internships') }}" class="btn btn-tech-primary">Explore Internships</a>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Right: Scholar Profile & Quick Tips -->
+        <div class="d-flex flex-column gap-3">
+            <div class="side-panel-card">
+                <div class="side-panel-title">STUDENT PROFILE</div>
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="avatar-initials-chip" style="width: 46px; height: 46px; font-size: 1.1rem; background: var(--blue);">
+                        {{ student.full_name[0].upper() }}
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-0">{{ student.full_name }}</h6>
+                        <small class="text-muted d-block">{{ student.college or 'University Scholar' }}</small>
+                    </div>
+                </div>
+                {% if student.degree %}
+                    <span class="badge role-badge role-student mb-2 d-inline-block">{{ student.degree }}</span>
+                {% endif %}
+                {% if student.resume_link %}
+                    <a href="/{{ student.resume_link }}" target="_blank" class="btn btn-sm btn-tech-outline w-100 mt-2">
+                        <i class="bi bi-file-earmark-pdf-fill text-danger me-1"></i>View Uploaded Resume
+                    </a>
+                {% endif %}
+            </div>
+
+            <div class="feature-banner-card">
+                <div class="side-panel-title text-uppercase" style="color: var(--teal);">CAREER BOOST</div>
+                <h5 class="feature-banner-title">Complete your profile.</h5>
+                <p class="small text-muted mb-3">Adding verified skills and projects increases response rates by 40%.</p>
+                <a href="{{ url_for('edit_profile') }}" class="btn btn-sm btn-tech-primary w-100">Update Profile</a>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- ================================================================
+         3. COMPANY DASHBOARD (RECRUITMENT WORKSPACE)
+    ================================================================ -->
+    {% elif session.get('role') == 'company' %}
+
+    <div class="mb-4">
+        <h1 class="fw-bold mb-1" style="font-size: 2.2rem; letter-spacing: -0.03em;">{{ company.company_name }}</h1>
+        <p class="text-muted mb-0">Candidate recruitment pipeline and active internship listings.</p>
+    </div>
+
+    <!-- 4 Hero Stat Cards -->
+    <div class="stat-hero-grid">
+        <a href="{{ url_for('dashboard') }}" class="stat-hero-card card-blue">
+            <div class="stat-card-top">
+                <span class="stat-label-title">POSTED LISTINGS</span>
+                <div class="stat-icon-circle"><i class="bi bi-briefcase-fill"></i></div>
+            </div>
+            <div class="stat-card-bottom">
+                <div class="stat-hero-number">{{ internships|length }}</div>
+                <div class="stat-sparkline-box">
+                    <span class="stat-trend-tag">Listings</span>
+                    <svg class="sparkline-svg" viewBox="0 0 80 28"><path d="M2,24 Q20,12 35,18 T60,8 T78,4" /></svg>
+                </div>
+            </div>
+        </a>
+
+        <a href="{{ url_for('dashboard') }}" class="stat-hero-card card-teal">
+            <div class="stat-card-top">
+                <span class="stat-label-title">ACTIVE OPENINGS</span>
+                <div class="stat-icon-circle"><i class="bi bi-check-circle-fill"></i></div>
+            </div>
+            <div class="stat-card-bottom">
+                <div class="stat-hero-number">{{ internships | selectattr('is_active', 'equalto', 1) | list | length }}</div>
+                <div class="stat-sparkline-box">
+                    <span class="stat-trend-tag">Live</span>
+                    <svg class="sparkline-svg" viewBox="0 0 80 28"><path d="M2,22 Q25,8 45,20 T78,6" /></svg>
+                </div>
+            </div>
+        </a>
+
+        <a href="{{ url_for('all_applicants') }}" class="stat-hero-card card-purple">
+            <div class="stat-card-top">
+                <span class="stat-label-title">TOTAL CANDIDATES</span>
+                <div class="stat-icon-circle"><i class="bi bi-people-fill"></i></div>
+            </div>
+            <div class="stat-card-bottom">
+                <div class="stat-hero-number">{{ internships | sum(attribute='applicant_count') }}</div>
+                <div class="stat-sparkline-box">
+                    <span class="stat-trend-tag">Applicants</span>
+                    <svg class="sparkline-svg" viewBox="0 0 80 28"><path d="M2,20 Q18,24 38,10 T60,18 T78,6" /></svg>
+                </div>
+            </div>
+        </a>
+
+        <a href="{{ url_for('edit_profile') }}" class="stat-hero-card card-orange">
+            <div class="stat-card-top">
+                <span class="stat-label-title">HQ LOCATION</span>
+                <div class="stat-icon-circle"><i class="bi bi-geo-alt-fill"></i></div>
+            </div>
+            <div class="stat-card-bottom">
+                <div class="stat-hero-number" style="font-size: 1.6rem;">{{ company.location or 'Verified' }}</div>
+                <div class="stat-sparkline-box">
+                    <span class="stat-trend-tag">Partner</span>
+                    <svg class="sparkline-svg" viewBox="0 0 80 28"><path d="M2,26 Q20,18 40,22 T65,8 T78,4" /></svg>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <!-- Quick Action Pills -->
+    <div class="action-pill-strip">
+        <a href="{{ url_for('post_internship') }}" class="btn-action-pill pill-blue">
+            <i class="bi bi-plus-circle-fill"></i>Post Internship
+        </a>
+        <a href="{{ url_for('all_applicants') }}" class="btn-action-pill pill-purple">
+            <i class="bi bi-people-fill"></i>All Applicants
+        </a>
+        <a href="{{ url_for('company_profile', company_id=company.id) }}" class="btn-action-pill pill-dark">
+            <i class="bi bi-building"></i>Company Profile
+        </a>
+        <a href="{{ url_for('edit_profile') }}" class="btn-action-pill pill-coral">
+            <i class="bi bi-gear-fill"></i>Settings
+        </a>
+    </div>
+
+    <!-- Company Listings Management Table -->
+    <div class="bento-card mb-4">
+        <div class="bento-card-header">
+            <h5 class="bento-title mb-0">Posted Internship Listings</h5>
+            <a href="{{ url_for('post_internship') }}" class="btn btn-sm btn-tech-primary">New Listing</a>
+        </div>
+
+        {% if internships %}
+        <div class="table-responsive">
+            <table class="table-custom">
+                <thead>
+                    <tr>
+                        <th>Position Title</th>
+                        <th>Location</th>
+                        <th>Stipend</th>
+                        <th>Deadline</th>
+                        <th>Applicants</th>
+                        <th>Status</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for job in internships %}
+                    <tr>
+                        <td>
+                            <div class="fw-bold">{{ job.title }}</div>
+                            <small class="text-muted">Posted {{ job.posted_at.strftime('%d %b %Y') }}</small>
+                        </td>
+                        <td><span class="text-muted small">{{ job.location or 'Remote' }}</span></td>
+                        <td><span class="text-muted small">{{ job.stipend or 'Unpaid' }}</span></td>
+                        <td><span class="mono-metric small text-muted">{{ job.deadline.strftime('%d %b %Y') if job.deadline else 'Rolling' }}</span></td>
+                        <td>
+                            <span class="badge blue-soft fw-bold">
+                                {{ job.applicant_count }} candidates
+                            </span>
+                        </td>
+                        <td>
+                            {% if job.is_active %}
+                                <span class="badge teal-soft">Active</span>
+                            {% else %}
+                                <span class="badge bg-light text-muted border">Closed</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            <a href="{{ url_for('view_applications', internship_id=job.id) }}" class="btn btn-sm btn-tech-outline">
+                                Review Applicants ({{ job.applicant_count }})
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5 text-muted">
+            <i class="bi bi-briefcase display-4 d-block mb-3 opacity-50"></i>
+            <p class="mb-3">Your company hasn't posted any internship openings yet.</p>
+            <a href="{{ url_for('post_internship') }}" class="btn btn-tech-primary">Post First Internship</a>
+        </div>
+        {% endif %}
+    </div>
+
+    {% endif %}
+
+</div>
+{% endblock %}

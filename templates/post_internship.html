@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% block title %}Post Internship — InternHub{% endblock %}
+
+{% block content %}
+<div class="fade-in-up">
+
+    <!-- Back Link -->
+    <div class="mb-4">
+        <a href="{{ url_for('dashboard') }}" class="btn btn-sm btn-tech-outline">
+            <i class="bi bi-arrow-left me-1"></i>Back to Dashboard
+        </a>
+    </div>
+
+    <div class="row g-4">
+        <!-- Left: Guidance Panel -->
+        <div class="col-lg-4 col-12">
+            <div class="bento-card p-4 mb-4">
+                <div class="activity-icon-badge activity-icon-purple mb-3" style="width: 44px; height: 44px; font-size: 1.15rem;">
+                    <i class="bi bi-briefcase-fill"></i>
+                </div>
+                <h4 class="fw-bold mb-2">Post a New Internship</h4>
+                <p class="text-muted small mb-0" style="line-height: 1.7;">Fill in your internship details and start receiving qualified student applications. All listings go live instantly after submission.</p>
+            </div>
+
+            <div class="bento-card p-4">
+                <small class="text-muted text-uppercase fw-bold d-block mb-3">Posting Tips</small>
+                <ul class="list-unstyled d-flex flex-column gap-3 mb-0 small text-muted">
+                    <li class="d-flex gap-2">
+                        <i class="bi bi-check-circle-fill text-success flex-shrink-0 mt-1"></i>
+                        <span>Use a specific title like <em>"Frontend React Intern"</em> instead of generic terms.</span>
+                    </li>
+                    <li class="d-flex gap-2">
+                        <i class="bi bi-check-circle-fill text-success flex-shrink-0 mt-1"></i>
+                        <span>List skill requirements clearly to get better-matched applicants.</span>
+                    </li>
+                    <li class="d-flex gap-2">
+                        <i class="bi bi-check-circle-fill text-success flex-shrink-0 mt-1"></i>
+                        <span>Include stipend to attract more applications and show transparency.</span>
+                    </li>
+                    <li class="d-flex gap-2">
+                        <i class="bi bi-check-circle-fill text-success flex-shrink-0 mt-1"></i>
+                        <span>Set a realistic deadline — we recommend at least 2 weeks out.</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Right: Form -->
+        <div class="col-lg-8 col-12">
+            <div class="bento-card p-4 p-md-5">
+                <h3 class="fw-bold mb-4 pb-2 border-bottom">
+                    <i class="bi bi-file-earmark-plus-fill text-primary me-2"></i>Internship Details
+                </h3>
+
+                <form method="POST" action="{{ url_for('post_internship') }}" novalidate>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small" for="title">Position Title *</label>
+                        <input type="text" class="form-control" id="title" name="title"
+                               placeholder="e.g. Full Stack Developer Intern, Data Analyst Intern" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small" for="description">Role Description *</label>
+                        <textarea class="form-control" id="description" name="description" rows="5"
+                                  placeholder="Describe the role, responsibilities, team culture, and what the intern will build or work on..." required></textarea>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small" for="location">Work Location *</label>
+                            <input type="text" class="form-control" id="location" name="location"
+                                   placeholder="Remote / Hybrid / City Name" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small" for="duration">Duration *</label>
+                            <select class="form-select" id="duration" name="duration" required>
+                                <option value="">Select Duration</option>
+                                {% for dur in ['1 Month', '2 Months', '3 Months', '4 Months', '6 Months', '1 Year'] %}
+                                    <option value="{{ dur }}">{{ dur }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small" for="stipend">Monthly Stipend (INR)</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-currency-rupee"></i></span>
+                                <input type="number" class="form-control" id="stipend" name="stipend"
+                                       placeholder="e.g. 15000">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small" for="openings">Number of Openings *</label>
+                            <input type="number" class="form-control" id="openings" name="openings"
+                                   placeholder="e.g. 3" min="1" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small" for="skills_required">Skills Required</label>
+                        <input type="text" class="form-control" id="skills_required" name="skills_required"
+                               placeholder="e.g. Python, React, SQL, REST APIs, Git">
+                        <small class="text-muted">Comma-separated list of required or preferred skills.</small>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold small" for="deadline">Application Deadline *</label>
+                        <input type="date" class="form-control" id="deadline" name="deadline" required>
+                    </div>
+
+                    <button type="submit" class="btn-tech-primary w-100 py-3 shadow-sm justify-content-center" style="font-size: 1rem;">
+                        <i class="bi bi-send-fill"></i>Publish Internship Listing
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% block title %}{{ company.company_name }} — Company Profile | InternHub{% endblock %}
+
+{% block content %}
+<div class="fade-in-up">
+
+    <!-- Back Link -->
+    <div class="mb-4">
+        <a href="{{ url_for('internships') }}" class="btn btn-sm btn-tech-outline">
+            <i class="bi bi-arrow-left me-1"></i>Back to Listings
+        </a>
+    </div>
+
+    <!-- Profile Hero -->
+    <div class="bento-card mb-4 p-4 p-md-5">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-8 col-12">
+                <div class="d-flex align-items-center gap-4 mb-4">
+                    <div class="activity-icon-badge activity-icon-purple flex-shrink-0"
+                         style="width: 72px; height: 72px; font-size: 2rem; font-weight: 700;">
+                        {{ company.company_name[0].upper() }}
+                    </div>
+                    <div>
+                        <h1 class="fw-bold mb-1" style="font-size: 1.8rem;">{{ company.company_name }}</h1>
+                        {% if company.industry %}
+                            <span class="badge blue-soft fw-bold px-3 py-2">{{ company.industry }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-0">
+                    {% if company.location %}
+                    <div class="col-md-4 col-6">
+                        <small class="text-muted text-uppercase fw-bold d-block mb-1">Headquarters</small>
+                        <strong class="small">{{ company.location }}</strong>
+                    </div>
+                    {% endif %}
+                    {% if company.website %}
+                    <div class="col-md-4 col-6">
+                        <small class="text-muted text-uppercase fw-bold d-block mb-1">Website</small>
+                        <a href="{{ company.website }}" target="_blank" class="small fw-semibold text-primary">
+                            <i class="bi bi-link-45deg me-1"></i>Visit Site
+                        </a>
+                    </div>
+                    {% endif %}
+                    <div class="col-md-4 col-6">
+                        <small class="text-muted text-uppercase fw-bold d-block mb-1">Active Listings</small>
+                        <strong class="small text-dark">{{ internships | length }} Positions</strong>
+                    </div>
+                </div>
+            </div>
+
+            {% if company.bio %}
+            <div class="col-lg-4 col-12">
+                <div class="p-3 rounded-3 bg-light border h-100">
+                    <small class="text-muted text-uppercase fw-bold d-block mb-2">About</small>
+                    <p class="text-secondary small mb-0" style="line-height: 1.7;">{{ company.bio }}</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Active Listings Section -->
+    <h3 class="fw-bold mb-3">Open Positions at {{ company.company_name }}</h3>
+
+    {% if internships %}
+        <div class="row g-4 mb-5">
+            {% for job in internships %}
+            <div class="col-md-6 col-12">
+                <div class="bento-card h-100 d-flex flex-column">
+                    <div class="d-flex align-items-start justify-content-between mb-3 gap-2">
+                        <div>
+                            <h5 class="fw-bold mb-1" style="font-size: 1.1rem;">{{ job.title }}</h5>
+                            <div class="d-flex flex-wrap gap-2">
+                                <span class="badge bg-light text-dark border"><i class="bi bi-geo-alt me-1 text-primary"></i>{{ job.location or 'Remote' }}</span>
+                                <span class="badge bg-light text-dark border"><i class="bi bi-clock me-1 text-warning"></i>{{ job.duration or 'Open' }}</span>
+                                {% if job.stipend %}
+                                    <span class="badge bg-success-subtle text-success fw-bold">
+                                        <i class="bi bi-currency-rupee me-1"></i>{{ job.stipend }}
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% if job.is_active is defined %}
+                            <span class="badge {% if job.is_active %}bg-success-subtle text-success{% else %}bg-secondary-subtle text-secondary{% endif %} fw-bold">
+                                {% if job.is_active %}Active{% else %}Closed{% endif %}
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    <p class="text-secondary small mb-3 flex-grow-1" style="line-height: 1.6;">
+                        {{ job.description[:120] }}{% if job.description|length > 120 %}...{% endif %}
+                    </p>
+
+                    {% if job.skills_required %}
+                    <div class="mb-3">
+                        <div class="d-flex flex-wrap gap-1">
+                            {% for skill in job.skills_required.split(',')[:4] %}
+                                <span class="badge bg-secondary-subtle text-secondary" style="font-size: 0.7rem;">{{ skill.strip() }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="border-top pt-3 mt-auto d-flex align-items-center justify-content-between">
+                        <span class="text-muted small">
+                            Deadline: {{ job.deadline.strftime('%d %b %Y') if job.deadline else 'Rolling' }}
+                        </span>
+                        {% if session.get('role') == 'student' %}
+                            <a href="{{ url_for('apply', internship_id=job.id) }}" class="btn-tech-primary py-1 px-3" style="font-size: 0.85rem;">
+                                Apply Now
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="bento-card p-5 text-center my-4">
+            <i class="bi bi-briefcase display-2 text-muted opacity-25 d-block mb-3"></i>
+            <h4 class="fw-bold mb-2">No Active Openings</h4>
+            <p class="text-muted mb-0">This company currently has no active internship listings on InternHub.</p>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

@@ -1,0 +1,187 @@
+{% extends 'base.html' %}
+{% block title %}{% if is_editing %}Edit Application{% else %}Apply{% endif %} — {{ internship.title }} | InternHub{% endblock %}
+
+{% block content %}
+<div class="fade-in-up">
+    <!-- Back Link -->
+    <div class="mb-4">
+        <a href="{% if is_editing %}{{ url_for('student_applications') }}{% else %}{{ url_for('internships') }}{% endif %}" class="btn btn-sm btn-tech-outline">
+            <i class="bi bi-arrow-left me-1"></i>Back to {% if is_editing %}Applications{% else %}Internships{% endif %}
+        </a>
+    </div>
+
+    <div class="row g-4">
+        <!-- Left Column: Internship Role Snapshot -->
+        <div class="col-lg-4 col-12">
+            <div class="bento-card p-4">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="activity-icon-badge activity-icon-blue" style="width: 48px; height: 48px; font-size: 1.25rem;">
+                        {{ internship.company_name[0].upper() }}
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-0" style="font-size: 1.2rem;">{{ internship.title }}</h4>
+                        <a href="{{ url_for('company_profile', company_id=internship.company_id) }}" class="text-muted small fw-semibold">
+                            <i class="bi bi-building me-1"></i>{{ internship.company_name }}
+                        </a>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-column gap-2 mb-3">
+                    {% if internship.location %}
+                    <div class="d-flex justify-content-between text-muted small">
+                        <span>Location:</span>
+                        <strong class="text-dark">{{ internship.location }}</strong>
+                    </div>
+                    {% endif %}
+                    {% if internship.duration %}
+                    <div class="d-flex justify-content-between text-muted small">
+                        <span>Duration:</span>
+                        <strong class="text-dark">{{ internship.duration }}</strong>
+                    </div>
+                    {% endif %}
+                    {% if internship.stipend %}
+                    <div class="d-flex justify-content-between text-muted small">
+                        <span>Stipend:</span>
+                        <strong class="text-success">{{ internship.stipend }}</strong>
+                    </div>
+                    {% endif %}
+                    {% if internship.openings %}
+                    <div class="d-flex justify-content-between text-muted small">
+                        <span>Positions:</span>
+                        <strong class="text-dark">{{ internship.openings }} Openings</strong>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="border-top pt-3 mb-3">
+                    <small class="text-muted text-uppercase fw-bold d-block mb-1">About Role</small>
+                    <p class="text-secondary small mb-0">{{ internship.description }}</p>
+                </div>
+
+                {% if internship.skills_required %}
+                <div class="border-top pt-3">
+                    <small class="text-muted text-uppercase fw-bold d-block mb-2">Required Skills</small>
+                    <div class="d-flex flex-wrap gap-1">
+                        {% for skill in internship.skills_required.split(',') %}
+                            <span class="badge bg-secondary-subtle text-secondary" style="font-size: 0.72rem;">{{ skill.strip() }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Right Column: Submission Form -->
+        <div class="col-lg-8 col-12">
+            <div class="bento-card p-4 p-md-5">
+                <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+                    <h3 class="fw-bold mb-0">
+                        <i class="bi bi-send-fill text-primary me-2"></i>
+                        {% if is_editing %}Edit Application Dossier{% else %}Submit Application{% endif %}
+                    </h3>
+                    {% if is_editing %}
+                        <span class="badge bg-warning-subtle text-warning-emphasis">Revision #{{ (application.edit_count or 0) + 1 }}</span>
+                    {% endif %}
+                </div>
+
+                <form method="POST" action="{% if is_editing %}{{ url_for('edit_application', app_id=application.id) }}{% else %}{{ url_for('apply', internship_id=internship.id) }}{% endif %}" enctype="multipart/form-data" novalidate>
+
+                    <!-- Student Pre-fills -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small" for="full_name">Full Name *</label>
+                            <input type="text" class="form-control" id="full_name" name="full_name"
+                                   value="{% if is_editing %}{{ application.full_name or student.full_name }}{% else %}{{ student.full_name }}{% endif %}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small" for="phone">Phone Number</label>
+                            <input type="tel" class="form-control" id="phone" name="phone"
+                                   placeholder="+91 98765 43210"
+                                   value="{% if is_editing %}{{ application.phone or student.phone or '' }}{% else %}{{ student.phone or '' }}{% endif %}">
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small" for="college">University / College</label>
+                            <input type="text" class="form-control" id="college" name="college"
+                                   value="{% if is_editing %}{{ application.college or student.college or '' }}{% else %}{{ student.college or '' }}{% endif %}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small" for="degree">Degree & Branch</label>
+                            <input type="text" class="form-control" id="degree" name="degree"
+                                   value="{% if is_editing %}{{ application.degree or student.degree or '' }}{% else %}{{ student.degree or '' }}{% endif %}">
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small" for="cgpa">CGPA / Percentage</label>
+                            <input type="text" class="form-control" id="cgpa" name="cgpa"
+                                   placeholder="e.g. 8.9 / 10.0"
+                                   value="{% if is_editing %}{{ application.cgpa or '' }}{% endif %}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small" for="preferred_location">Preferred Location / Remote</label>
+                            <input type="text" class="form-control" id="preferred_location" name="preferred_location"
+                                   placeholder="e.g. Remote"
+                                   value="{% if is_editing %}{{ application.preferred_location or '' }}{% endif %}">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small" for="skills">Skills Highlighted (Comma separated)</label>
+                        <input type="text" class="form-control" id="skills" name="skills"
+                               placeholder="e.g. Python, Flask, React, SQL, Git"
+                               value="{% if is_editing %}{{ application.skills or student.skills or '' }}{% else %}{{ student.skills or '' }}{% endif %}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small" for="portfolio_links">Portfolio & Project Links</label>
+                        <input type="text" class="form-control" id="portfolio_links" name="portfolio_links"
+                               placeholder="GitHub, LinkedIn, Personal website URLs"
+                               value="{% if is_editing %}{{ application.portfolio_links or '' }}{% endif %}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small" for="certifications">Certifications</label>
+                        <input type="text" class="form-control" id="certifications" name="certifications"
+                               placeholder="e.g. AWS Cloud Practitioner, Google Analytics"
+                               value="{% if is_editing %}{{ application.certifications or '' }}{% endif %}">
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold small" for="cover_letter">Cover Letter Note</label>
+                        <textarea class="form-control" id="cover_letter" name="cover_letter" rows="5"
+                                  placeholder="Introduce yourself and explain what makes you a great fit for this role...">{% if is_editing %}{{ application.cover_letter or '' }}{% endif %}</textarea>
+                    </div>
+
+                    <!-- Resume Upload -->
+                    <div class="p-3 mb-4 rounded-3 border bg-light">
+                        <label class="form-label fw-bold small mb-2" for="resume">
+                            <i class="bi bi-file-earmark-pdf-fill text-danger me-1"></i>
+                            Application Resume (PDF Only)
+                        </label>
+                        <input type="file" class="form-control" id="resume" name="resume" accept=".pdf">
+                        <small class="text-muted mt-2 d-block" style="font-size: 0.75rem;">
+                            {% if is_editing and application.resume_link %}
+                                Current file: <a href="/{{ application.resume_link }}" target="_blank" class="fw-bold">View Current PDF</a> &bull; Uploading replaces it.
+                            {% elif student.resume_link %}
+                                Default resume: <a href="/{{ student.resume_link }}" target="_blank" class="fw-bold">View Profile PDF</a> &bull; Leave empty to use profile default.
+                            {% else %}
+                                Max size 5MB (PDF format).
+                            {% endif %}
+                        </small>
+                    </div>
+
+                    <button type="submit" class="btn-tech-primary w-100 py-3 shadow-sm justify-content-center" style="font-size: 1rem;">
+                        <i class="bi bi-send-check-fill"></i>
+                        {% if is_editing %}Save Application Changes{% else %}Submit Application{% endif %}
+                    </button>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

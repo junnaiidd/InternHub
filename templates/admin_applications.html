@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% block title %}All Applications — Admin | InternHub{% endblock %}
+
+{% block content %}
+<div class="fade-in-up">
+
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 pb-2 border-bottom">
+        <div>
+            <h2 class="fw-bold mb-1">Application Pipeline</h2>
+            <p class="text-muted small mb-0">
+                Monitor all applications across internships and students. Total: <strong>{{ applications | length }}</strong>
+            </p>
+        </div>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-sm btn-tech-outline">
+            <i class="bi bi-arrow-left me-1"></i>Back to Dashboard
+        </a>
+    </div>
+
+    <!-- Status Summary Chips -->
+    <div class="d-flex flex-wrap gap-3 mb-4">
+        <div class="bento-card px-4 py-3 d-flex align-items-center gap-3" style="flex: 0 0 auto;">
+            <div class="activity-icon-badge activity-icon-blue" style="width: 36px; height: 36px; font-size: 0.9rem;">
+                <i class="bi bi-inbox"></i>
+            </div>
+            <div>
+                <div class="fw-bold fs-5 mono-metric">{{ applications | length }}</div>
+                <div class="text-muted small">Total Applications</div>
+            </div>
+        </div>
+        <div class="bento-card px-4 py-3 d-flex align-items-center gap-3" style="flex: 0 0 auto;">
+            <div class="activity-icon-badge activity-icon-teal" style="width: 36px; height: 36px; font-size: 0.9rem;">
+                <i class="bi bi-clock-history"></i>
+            </div>
+            <div>
+                <div class="fw-bold fs-5 mono-metric">{{ applications | selectattr('status', 'equalto', 'pending') | list | length }}</div>
+                <div class="text-muted small">Pending Review</div>
+            </div>
+        </div>
+        <div class="bento-card px-4 py-3 d-flex align-items-center gap-3" style="flex: 0 0 auto;">
+            <div class="activity-icon-badge activity-icon-green" style="width: 36px; height: 36px; font-size: 0.9rem;">
+                <i class="bi bi-check-circle"></i>
+            </div>
+            <div>
+                <div class="fw-bold fs-5 mono-metric">{{ applications | selectattr('status', 'equalto', 'accepted') | list | length }}</div>
+                <div class="text-muted small">Accepted</div>
+            </div>
+        </div>
+        <div class="bento-card px-4 py-3 d-flex align-items-center gap-3" style="flex: 0 0 auto;">
+            <div class="activity-icon-badge activity-icon-red" style="width: 36px; height: 36px; font-size: 0.9rem;">
+                <i class="bi bi-x-circle"></i>
+            </div>
+            <div>
+                <div class="fw-bold fs-5 mono-metric">{{ applications | selectattr('status', 'equalto', 'rejected') | list | length }}</div>
+                <div class="text-muted small">Rejected</div>
+            </div>
+        </div>
+    </div>
+
+    {% if applications %}
+        <div class="bento-card mb-5 p-0" style="overflow: hidden;">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead style="background: #f8f7f2;">
+                        <tr>
+                            <th class="ps-4 py-3 text-muted small fw-bold text-uppercase">Student</th>
+                            <th class="py-3 text-muted small fw-bold text-uppercase">Position</th>
+                            <th class="py-3 text-muted small fw-bold text-uppercase">Company</th>
+                            <th class="py-3 text-muted small fw-bold text-uppercase">Status</th>
+                            <th class="py-3 text-muted small fw-bold text-uppercase d-none d-md-table-cell">Applied</th>
+                            <th class="py-3 text-muted small fw-bold text-uppercase pe-4 text-end">View</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for app in applications %}
+                        <tr>
+                            <td class="ps-4 py-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="activity-icon-badge activity-icon-blue" style="width: 32px; height: 32px; font-size: 0.78rem; flex-shrink: 0;">
+                                        {{ app.full_name[0].upper() if app.full_name else 'S' }}
+                                    </div>
+                                    <div>
+                                        <span class="fw-semibold small d-block">{{ app.full_name or 'Unknown' }}</span>
+                                        <span class="text-muted very-small">{{ app.college or '—' }}</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="py-3">
+                                <span class="fw-semibold small">{{ app.title }}</span>
+                            </td>
+                            <td class="py-3">
+                                <span class="text-muted small">{{ app.company_name }}</span>
+                            </td>
+                            <td class="py-3">
+                                <span class="badge
+                                    {% if app.status == 'pending' %}bg-warning-subtle text-warning-emphasis
+                                    {% elif app.status == 'accepted' %}bg-success-subtle text-success
+                                    {% else %}bg-danger-subtle text-danger{% endif %}
+                                    fw-bold px-3 py-1 text-capitalize">
+                                    {{ app.status }}
+                                </span>
+                            </td>
+                            <td class="py-3 d-none d-md-table-cell">
+                                <span class="text-muted small">{{ app.applied_at.strftime('%d %b %Y') if app.applied_at else '—' }}</span>
+                            </td>
+                            <td class="py-3 pe-4 text-end">
+                                <a href="{{ url_for('view_applications', internship_id=app.internship_id) }}" class="btn btn-sm btn-tech-outline">
+                                    <i class="bi bi-eye me-1"></i>View
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <div class="bento-card text-center py-8">
+            <div class="activity-icon-badge activity-icon-blue mx-auto mb-3" style="width: 64px; height: 64px; font-size: 1.8rem;">
+                <i class="bi bi-inbox"></i>
+            </div>
+            <h5 class="fw-bold mb-2">No Applications Yet</h5>
+            <p class="text-muted small">Students haven't started applying to internships.</p>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

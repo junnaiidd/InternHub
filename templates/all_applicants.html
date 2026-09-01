@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% block title %}All Applicants — InternHub{% endblock %}
+
+{% block content %}
+<div class="fade-in-up">
+
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 pb-2 border-bottom">
+        <div>
+            <h2 class="fw-bold mb-1">All Applicants Roster</h2>
+            <p class="text-muted small mb-0">
+                Global view of all candidates who have applied to <strong>{{ company.company_name }}</strong>'s listings.
+                Total: <strong>{{ applications | length }}</strong>
+            </p>
+        </div>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-sm btn-tech-outline">
+            <i class="bi bi-arrow-left me-1"></i>Back to Dashboard
+        </a>
+    </div>
+
+    {% if applications %}
+        <!-- Table for all applicants -->
+        <div class="bento-card mb-5 p-0" style="overflow: hidden;">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead style="background: #f8f7f2;">
+                        <tr>
+                            <th class="ps-4 py-3 text-muted small fw-bold text-uppercase">Candidate</th>
+                            <th class="py-3 text-muted small fw-bold text-uppercase">Position Applied</th>
+                            <th class="py-3 text-muted small fw-bold text-uppercase d-none d-md-table-cell">University</th>
+                            <th class="py-3 text-muted small fw-bold text-uppercase d-none d-lg-table-cell">GPA</th>
+                            <th class="py-3 text-muted small fw-bold text-uppercase">Status</th>
+                            <th class="py-3 text-muted small fw-bold text-uppercase d-none d-md-table-cell">Applied</th>
+                            <th class="py-3 text-muted small fw-bold text-uppercase pe-4">Resume</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for app in applications %}
+                        <tr>
+                            <td class="ps-4 py-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="activity-icon-badge activity-icon-purple"
+                                         style="width: 36px; height: 36px; font-size: 0.9rem; flex-shrink: 0;">
+                                        {{ (app.full_name or '?')[0].upper() }}
+                                    </div>
+                                    <div>
+                                        <div class="fw-semibold small">{{ app.full_name or 'N/A' }}</div>
+                                        {% if app.phone %}
+                                            <div class="text-muted" style="font-size: 0.72rem;">{{ app.phone }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="py-3">
+                                <span class="fw-semibold small">{{ app.internship_title }}</span>
+                            </td>
+                            <td class="py-3 d-none d-md-table-cell">
+                                <span class="text-muted small">{{ app.college or '—' }}</span>
+                            </td>
+                            <td class="py-3 d-none d-lg-table-cell">
+                                {% if app.cgpa %}
+                                    <span class="badge bg-success-subtle text-success fw-bold">{{ app.cgpa }}</span>
+                                {% else %}
+                                    <span class="text-muted small">—</span>
+                                {% endif %}
+                            </td>
+                            <td class="py-3">
+                                <span class="status-badge status-{{ app.status }}">
+                                    {{ app.status.capitalize() }}
+                                </span>
+                            </td>
+                            <td class="py-3 d-none d-md-table-cell">
+                                <span class="text-muted small">{{ app.applied_at.strftime('%d %b %Y') if app.applied_at else '—' }}</span>
+                            </td>
+                            <td class="py-3 pe-4">
+                                {% if app.resume_link %}
+                                    <a href="/{{ app.resume_link }}" target="_blank" class="btn btn-sm btn-tech-outline py-1 px-2">
+                                        <i class="bi bi-file-earmark-pdf-fill text-danger me-1"></i>PDF
+                                    </a>
+                                {% else %}
+                                    <span class="text-muted small">None</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <div class="bento-card p-5 text-center my-4">
+            <i class="bi bi-people display-2 text-muted opacity-25 d-block mb-3"></i>
+            <h4 class="fw-bold mb-2">No Applications Received Yet</h4>
+            <p class="text-muted mb-0">Once students apply to your listings, they will appear here.</p>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

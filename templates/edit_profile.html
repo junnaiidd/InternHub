@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+{% block title %}Edit Profile — InternHub{% endblock %}
+
+{% block content %}
+<div class="fade-in-up">
+
+    <!-- Back Link -->
+    <div class="mb-4">
+        <a href="{{ url_for('dashboard') }}" class="btn btn-sm btn-tech-outline">
+            <i class="bi bi-arrow-left me-1"></i>Back to Dashboard
+        </a>
+    </div>
+
+    <div class="row g-4">
+        <!-- Left: Profile Avatar & Identity Summary -->
+        <div class="col-lg-4 col-12">
+            <div class="bento-card p-4 text-center mb-4">
+                <div class="activity-icon-badge activity-icon-blue mx-auto mb-3"
+                     style="width: 72px; height: 72px; font-size: 2rem; font-weight: 700;">
+                    {% if session.get('role') == 'student' %}
+                        {{ (profile.full_name or profile.email or 'S')[0].upper() }}
+                    {% else %}
+                        {{ (profile.company_name or profile.email or 'C')[0].upper() }}
+                    {% endif %}
+                </div>
+                <h4 class="fw-bold mb-1">
+                    {% if session.get('role') == 'student' %}
+                        {{ profile.full_name or 'Your Name' }}
+                    {% else %}
+                        {{ profile.company_name or 'Your Company' }}
+                    {% endif %}
+                </h4>
+                <span class="badge blue-soft fw-bold px-3 py-1 mb-2 text-capitalize">{{ session.get('role') }}</span>
+                <p class="text-muted small mb-0">{{ profile.email }}</p>
+            </div>
+
+            <!-- Danger Zone -->
+            <div class="bento-card p-4 border border-danger-subtle">
+                <small class="text-muted text-uppercase fw-bold d-block mb-2">Danger Zone</small>
+                <p class="text-muted small mb-3">Permanently delete your account and all associated data. This action is irreversible.</p>
+                <button type="button" class="btn btn-sm w-100"
+                        style="background: #F0645A; color: #fff; border-radius: 8px; font-weight: 600;"
+                        data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+                    <i class="bi bi-trash3-fill me-1"></i>Delete My Account
+                </button>
+            </div>
+        </div>
+
+        <!-- Right: Edit Form -->
+        <div class="col-lg-8 col-12">
+            <div class="bento-card p-4 p-md-5">
+                <h3 class="fw-bold mb-4 pb-2 border-bottom">
+                    <i class="bi bi-person-gear text-primary me-2"></i>Edit Profile Information
+                </h3>
+
+                <form method="POST" action="{{ url_for('edit_profile') }}" enctype="multipart/form-data" novalidate>
+
+                    {% if session.get('role') == 'student' %}
+                    <!-- STUDENT FIELDS -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small" for="full_name">Full Name</label>
+                            <input type="text" class="form-control" id="full_name" name="full_name"
+                                   value="{{ profile.full_name or '' }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small" for="phone">Phone Number</label>
+                            <input type="tel" class="form-control" id="phone" name="phone"
+                                   placeholder="+91 98765 43210" value="{{ profile.phone or '' }}">
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small" for="college">University / College</label>
+                            <input type="text" class="form-control" id="college" name="college"
+                                   value="{{ profile.college or '' }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small" for="degree">Degree & Branch</label>
+                            <input type="text" class="form-control" id="degree" name="degree"
+                                   value="{{ profile.degree or '' }}">
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small" for="graduation_year">Expected Graduation Year</label>
+                            <input type="number" class="form-control" id="graduation_year" name="graduation_year"
+                                   placeholder="e.g. 2026" value="{{ profile.graduation_year or '' }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small" for="cgpa">CGPA / Percentage</label>
+                            <input type="text" class="form-control" id="cgpa" name="cgpa"
+                                   placeholder="e.g. 8.9 / 10.0" value="{{ profile.cgpa or '' }}">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small" for="skills">Skills (Comma separated)</label>
+                        <input type="text" class="form-control" id="skills" name="skills"
+                               placeholder="e.g. Python, Flask, React, SQL, Git" value="{{ profile.skills or '' }}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small" for="bio">Bio / About Me</label>
+                        <textarea class="form-control" id="bio" name="bio" rows="3"
+                                  placeholder="Brief summary about yourself, your interests and career goals...">{{ profile.bio or '' }}</textarea>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold small" for="linkedin_url">LinkedIn Profile URL</label>
+                        <input type="url" class="form-control" id="linkedin_url" name="linkedin_url"
+                               placeholder="https://linkedin.com/in/username" value="{{ profile.linkedin_url or '' }}">
+                    </div>
+
+                    <!-- Resume Upload -->
+                    <div class="p-3 mb-4 rounded-3 border bg-light">
+                        <label class="form-label fw-bold small mb-2" for="resume">
+                            <i class="bi bi-file-earmark-pdf-fill text-danger me-1"></i>Resume PDF
+                        </label>
+                        <input type="file" class="form-control" id="resume" name="resume" accept=".pdf">
+                        {% if profile.resume_link %}
+                            <small class="text-muted mt-2 d-block">
+                                Current: <a href="/{{ profile.resume_link }}" target="_blank" class="fw-bold text-primary">View Current PDF</a> — Upload new file to replace.
+                            </small>
+                        {% else %}
+                            <small class="text-muted mt-2 d-block">Max 5MB · PDF format only.</small>
+                        {% endif %}
+                    </div>
+
+                    {% else %}
+                    <!-- COMPANY FIELDS -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small" for="company_name">Company Name</label>
+                            <input type="text" class="form-control" id="company_name" name="company_name"
+                                   value="{{ profile.company_name or '' }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small" for="industry">Industry Sector</label>
+                            <input type="text" class="form-control" id="industry" name="industry"
+                                   placeholder="e.g. FinTech, SaaS, E-Commerce" value="{{ profile.industry or '' }}">
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small" for="location">Office Location</label>
+                            <input type="text" class="form-control" id="location" name="location"
+                                   placeholder="City, Country or Remote" value="{{ profile.location or '' }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small" for="website">Company Website</label>
+                            <input type="url" class="form-control" id="website" name="website"
+                                   placeholder="https://yourcompany.com" value="{{ profile.website or '' }}">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small" for="contact_email">Recruitment Contact Email</label>
+                        <input type="email" class="form-control" id="contact_email" name="contact_email"
+                               placeholder="hr@yourcompany.com" value="{{ profile.contact_email or '' }}">
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold small" for="bio">Company Bio</label>
+                        <textarea class="form-control" id="bio" name="bio" rows="4"
+                                  placeholder="Describe your company, culture, mission, and what makes you a great internship host...">{{ profile.bio or '' }}</textarea>
+                    </div>
+                    {% endif %}
+
+                    <button type="submit" class="btn-tech-primary w-100 py-3 shadow-sm justify-content-center" style="font-size: 1rem;">
+                        <i class="bi bi-check-circle-fill"></i>Save Profile Changes
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Account Confirmation Modal -->
+<div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bento-card border p-4">
+            <div class="text-center mb-3">
+                <div class="activity-icon-badge activity-icon-coral mx-auto mb-3" style="width: 56px; height: 56px; font-size: 1.5rem;">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                </div>
+                <h5 class="fw-bold mb-1">Confirm Account Deletion</h5>
+                <p class="text-muted small">
+                    This will permanently delete your account, all applications, listings, and profile data. You cannot undo this.
+                </p>
+            </div>
+            <div class="d-flex gap-3">
+                <button type="button" class="btn btn-sm btn-tech-outline flex-fill py-2" data-bs-dismiss="modal">
+                    Cancel, Keep Account
+                </button>
+                <a href="{{ url_for('delete_account') }}"
+                   class="btn btn-sm flex-fill py-2 justify-content-center"
+                   style="background: #F0645A; color: #fff; border-radius: 10px; display: flex; align-items: center; gap: 6px; font-weight: 700; text-decoration: none;">
+                    <i class="bi bi-trash3-fill"></i>Delete Permanently
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

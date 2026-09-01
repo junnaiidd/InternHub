@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+{% block title %}Users Directory — Admin | InternHub{% endblock %}
+
+{% block content %}
+<div class="fade-in-up">
+
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 pb-2 border-bottom">
+        <div>
+            <h2 class="fw-bold mb-1">Users Directory</h2>
+            <p class="text-muted small mb-0">
+                Manage and oversee all registered platform accounts. Total: <strong>{{ users | length }}</strong>
+            </p>
+        </div>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-sm btn-tech-outline">
+            <i class="bi bi-arrow-left me-1"></i>Back to Dashboard
+        </a>
+    </div>
+
+    <!-- Summary Stat Chips -->
+    <div class="d-flex flex-wrap gap-3 mb-4">
+        <div class="bento-card px-4 py-3 d-flex align-items-center gap-3" style="flex: 0 0 auto;">
+            <div class="activity-icon-badge activity-icon-blue" style="width: 36px; height: 36px; font-size: 0.9rem;">
+                <i class="bi bi-people-fill"></i>
+            </div>
+            <div>
+                <div class="fw-bold fs-5 mono-metric">{{ users | length }}</div>
+                <div class="text-muted small">Total Accounts</div>
+            </div>
+        </div>
+        <div class="bento-card px-4 py-3 d-flex align-items-center gap-3" style="flex: 0 0 auto;">
+            <div class="activity-icon-badge activity-icon-teal" style="width: 36px; height: 36px; font-size: 0.9rem;">
+                <i class="bi bi-person-fill"></i>
+            </div>
+            <div>
+                <div class="fw-bold fs-5 mono-metric">{{ users | selectattr('role', 'equalto', 'student') | list | length }}</div>
+                <div class="text-muted small">Students</div>
+            </div>
+        </div>
+        <div class="bento-card px-4 py-3 d-flex align-items-center gap-3" style="flex: 0 0 auto;">
+            <div class="activity-icon-badge activity-icon-purple" style="width: 36px; height: 36px; font-size: 0.9rem;">
+                <i class="bi bi-building"></i>
+            </div>
+            <div>
+                <div class="fw-bold fs-5 mono-metric">{{ users | selectattr('role', 'equalto', 'company') | list | length }}</div>
+                <div class="text-muted small">Companies</div>
+            </div>
+        </div>
+    </div>
+
+    {% if users %}
+        <div class="bento-card mb-5 p-0" style="overflow: hidden;">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead style="background: #f8f7f2;">
+                        <tr>
+                            <th class="ps-4 py-3 text-muted small fw-bold text-uppercase">User ID</th>
+                            <th class="py-3 text-muted small fw-bold text-uppercase">Email Address</th>
+                            <th class="py-3 text-muted small fw-bold text-uppercase">Role</th>
+                            <th class="py-3 text-muted small fw-bold text-uppercase d-none d-md-table-cell">Joined</th>
+                            <th class="py-3 text-muted small fw-bold text-uppercase pe-4 text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td class="ps-4 py-3">
+                                <span class="mono-metric text-muted small">#{{ user.id }}</span>
+                            </td>
+                            <td class="py-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="activity-icon-badge
+                                        {% if user.role == 'student' %}activity-icon-blue
+                                        {% elif user.role == 'company' %}activity-icon-purple
+                                        {% else %}activity-icon-orange{% endif %}"
+                                         style="width: 32px; height: 32px; font-size: 0.78rem; flex-shrink: 0;">
+                                        {{ user.email[0].upper() }}
+                                    </div>
+                                    <span class="fw-semibold small">{{ user.email }}</span>
+                                </div>
+                            </td>
+                            <td class="py-3">
+                                <span class="badge
+                                    {% if user.role == 'student' %}bg-primary-subtle text-primary
+                                    {% elif user.role == 'company' %}bg-purple-subtle text-purple
+                                    {% else %}bg-warning-subtle text-warning-emphasis{% endif %}
+                                    fw-bold px-3 py-1 text-capitalize">
+                                    {{ user.role }}
+                                </span>
+                            </td>
+                            <td class="py-3 d-none d-md-table-cell">
+                                <span class="text-muted small">{{ user.created_at.strftime('%d %b %Y') if user.created_at else '—' }}</span>
+                            </td>
+                            <td class="py-3 pe-4 text-end">
+                                {% if user.role != 'admin' %}
+                                <button type="button" class="btn btn-sm btn-tech-outline"
+                                        style="color: #F0645A; border-color: #F0645A;"
+                                        data-bs-toggle="modal" data-bs-target="#deleteUserModal{{ user.id }}">
+                                    <i class="bi bi-trash3 me-1"></i>Remove
+                                </button>
+                                {% else %}
+                                <span class="text-muted small fst-italic">Protected</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+
+                        <!-- Delete Confirmation Modal -->
+                        {% if user.role != 'admin' %}
+                        <div class="modal fade" id="deleteUserModal{{ user.id }}" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content bento-card border p-4">
+                                    <div class="text-center mb-3">
+                                        <div class="activity-icon-badge activity-icon-coral mx-auto mb-3" style="width: 48px; height: 48px; font-size: 1.3rem;">
+                                            <i class="bi bi-exclamation-triangle-fill"></i>
+                                        </div>
+                                        <h5 class="fw-bold">Confirm Account Deletion</h5>
+                                        <p class="text-muted small">You are about to permanently delete <strong>{{ user.email }}</strong>. This action cannot be undone.</p>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <button type="button" class="btn btn-sm btn-tech-outline flex-fill" data-bs-dismiss="modal">Cancel</button>
+                                        <a href="{{ url_for('delete_user', user_id=user.id) }}"
+                                           class="btn btn-sm flex-fill justify-content-center"
+                                           style="background: #F0645A; color: #fff; border-radius: 8px; display: flex; align-items: center; gap: 6px; font-weight: 600; text-decoration: none;">
+                                            <i class="bi bi-trash3-fill"></i>Delete Account
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <div class="bento-card p-5 text-center my-4">
+            <i class="bi bi-people display-2 text-muted opacity-25 d-block mb-3"></i>
+            <h4 class="fw-bold mb-2">No Registered Users</h4>
+            <p class="text-muted mb-0">User accounts will appear here once registrations occur.</p>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { padding: 30px; text-align: center; border-radius: 10px 10px 0 0; color: white; }
+        .header-accepted { background: #198754; }
+        .header-rejected { background: #dc3545; }
+        .content { background: #ffffff; padding: 30px; border: 1px solid #eee; border-radius: 0 0 10px 10px; }
+        .footer { text-align: center; padding: 20px; font-size: 12px; color: #888; }
+        .status-badge { display: inline-block; padding: 5px 15px; border-radius: 20px; font-weight: bold; text-transform: uppercase; font-size: 14px; margin-bottom: 15px; }
+        .badge-accepted { background: #e8f5e9; color: #198754; }
+        .badge-rejected { background: #ffebee; color: #dc3545; }
+        .btn { display: inline-block; padding: 12px 25px; color: white !important; text-decoration: none; border-radius: 5px; font-weight: bold; margin-top: 20px; }
+        .btn-accepted { background-color: #198754; }
+        .btn-rejected { background-color: #6c757d; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header {{ 'header-accepted' if status == 'accepted' else 'header-rejected' }}">
+            <h1 style="margin:0;">Application Update</h1>
+        </div>
+        <div class="content">
+            <p>Hello <strong>{{ student_name }}</strong>,</p>
+            <p>There has been a change in the status of your application for:</p>
+            
+            <div style="margin: 20px 0; border: 1px solid #eee; padding: 20px; border-radius: 8px;">
+                <h3 style="margin-top:0; color: #0d6efd;">{{ title }}</h3>
+                <p style="margin-bottom:10px;"><strong>Company:</strong> {{ company_name }}</p>
+                
+                <span class="status-badge {{ 'badge-accepted' if status == 'accepted' else 'badge-rejected' }}">
+                    Status: {{ status.capitalize() }}
+                </span>
+            </div>
+            
+            {% if status == 'accepted' %}
+                <p>Congratulations! The company has accepted your application. They will be in touch with you shortly regarding the next steps.</p>
+                <a href="{{ url_for('dashboard', _external=True) }}" class="btn btn-accepted">Go to Dashboard</a>
+            {% else %}
+                <p>Thank you for your interest in this position. Unfortunately, the company has decided to move forward with other candidates at this time. Don't be discouraged—there are many more opportunities waiting for you!</p>
+                <a href="{{ url_for('internships', _external=True) }}" class="btn btn-rejected">Browse More Internships</a>
+            {% endif %}
+            
+            <p style="margin-top: 30px;">Best regards,<br>The InternHub Team</p>
+        </div>
+        <div class="footer">
+            <p>&copy; 2026 InternHub Portal. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

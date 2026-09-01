@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block title %}Sign In — InternHub{% endblock %}
+
+{% block public_content %}
+<div class="auth-split-wrapper fade-in-up">
+    <div class="auth-card-block">
+        <div class="row g-0 align-items-stretch">
+            
+            <!-- Left Hero Panel -->
+            <div class="col-lg-5 auth-left-hero">
+                <div>
+                    <div class="d-flex align-items-center gap-2 mb-4">
+                        <div class="logo-ribbon-icon">
+                            <i class="bi bi-intersect"></i>
+                        </div>
+                        <span class="fs-4 fw-bold text-white">InternHub</span>
+                    </div>
+                    <h2 class="fw-bold text-white mb-3" style="font-size: 2rem; line-height: 1.2;">Welcome back to the portal.</h2>
+                    <p class="text-light small">
+                        Sign in to access your applications, browse verified internships, or manage company recruitment pipelines.
+                    </p>
+                </div>
+
+                <div class="mt-4 pt-3 border-top border-secondary">
+                    <div class="d-flex align-items-center gap-2 small text-light mb-2">
+                        <i class="bi bi-shield-check text-info"></i>
+                        <span>Encrypted Authentication & Session Security</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2 small text-light">
+                        <i class="bi bi-lightning-charge-fill text-warning"></i>
+                        <span>Real-time Candidate Review Updates</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Form Panel -->
+            <div class="col-lg-7 auth-right-form">
+                <div class="mb-4">
+                    <h3 class="fw-bold mb-1">Sign In</h3>
+                    <p class="text-muted small">Enter your account credentials to continue</p>
+                </div>
+
+                <form method="POST" action="{{ url_for('login') }}" novalidate>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small" for="email">Email Address</label>
+                        <input type="email" class="form-control" id="email" name="email"
+                               placeholder="name@university.edu or name@company.com"
+                               value="{{ request.form.get('email', '') }}" required autofocus>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <label class="form-label fw-bold small mb-0" for="password">Password</label>
+                            <a href="{{ url_for('forgot_password') }}" class="small text-muted">Forgot password?</a>
+                        </div>
+                        <input type="password" class="form-control" id="password" name="password"
+                               placeholder="Enter your password" required>
+                    </div>
+
+                    <button type="submit" class="btn-tech-primary w-100 py-2 mb-3 shadow-sm justify-content-center">
+                        <i class="bi bi-box-arrow-in-right"></i>Sign In to Dashboard
+                    </button>
+                </form>
+
+                <div class="text-center my-3 position-relative">
+                    <hr class="border-secondary-subtle">
+                    <span class="position-absolute top-50 start-50 translate-middle px-3 small text-muted bg-white">
+                        New to InternHub?
+                    </span>
+                </div>
+
+                <a href="{{ url_for('register') }}" class="btn-tech-outline w-100 justify-content-center">
+                    Create a Free Account
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}{% block content_unauth %}{% endblock %}{% endblock %}
