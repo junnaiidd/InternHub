@@ -13,6 +13,8 @@ from functools import wraps
 import os
 from urllib.parse import urlparse
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
+from dotenv import load_dotenv
+load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'internship_portal_secret_2024')
@@ -49,20 +51,32 @@ def send_email(subject, recipient, html_body):
 # DATABASE CONFIGURATION
 # Update these credentials to match your MySQL setup
 # ============================================================
+
+DB_HOST = os.getenv("DB_HOST", "localhost")
+DB_PORT = int(os.getenv("DB_PORT", "3306"))
+DB_USER = os.getenv("DB_USER", "root")
+DB_PASSWORD = os.getenv("DB_PASSWORD", "")
+DB_NAME = os.getenv("DB_NAME", "internship_portal")
+
 DB_CONFIG = {
-    'host': os.environ.get('DB_HOST'),
-    'port': int(os.environ.get('DB_PORT', 20870)),
-    'user': os.environ.get('DB_USER'),
-    'password': os.environ.get('DB_PASSWORD'),
-    'database': os.environ.get('DB_NAME'),
-    'ssl_disabled': False,
-    'ssl_verify_cert': False
+    "host": DB_HOST,
+    "port": DB_PORT,
+    "user": DB_USER,
+    "password": DB_PASSWORD,
+    "database": DB_NAME,
+    "autocommit": False,
+    "charset": "utf8mb4"
 }
+
+# Aiven/cloud MySQL requires SSL
+if DB_HOST != "localhost":
+    DB_CONFIG["ssl_disabled"] = False
+    DB_CONFIG["ssl_verify_cert"] = False
+
 
 def get_db():
     """Create and return a MySQL database connection."""
-    conn = mysql.connector.connect(**DB_CONFIG)
-    return conn
+    return mysql.connector.connect(**DB_CONFIG)
 
 
 def ensure_profile_schema():
