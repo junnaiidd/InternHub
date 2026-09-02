@@ -50,12 +50,12 @@ def send_email(subject, recipient, html_body):
 # Update these credentials to match your MySQL setup
 # ============================================================
 DB_CONFIG = {
-    'host': 'localhost',
-    'user': 'root',
-    'password': 'junnaiidd',        
-    'database': 'internship_portal',
-    'autocommit': False,
-    'charset': 'utf8mb4'
+    'host': os.environ.get('DB_HOST'),
+    'port': int(os.environ.get('DB_PORT', 20870)),
+    'user': os.environ.get('DB_USER'),
+    'password': os.environ.get('DB_PASSWORD'),
+    'database': os.environ.get('DB_NAME'),
+    'ssl_disabled': False
 }
 
 def get_db():
