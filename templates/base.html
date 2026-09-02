@@ -43,13 +43,16 @@
     
     <!-- Brand Logo with Ribbon Icon -->
     <div class="sidebar-brand">
-      <a href="{{ url_for('dashboard') }}" class="brand-ribbon-logo">
+    <a href="{{ url_for('dashboard') }}" class="brand-ribbon-logo">
         <div class="logo-ribbon-icon">
-          <i class="bi bi-intersect"></i>
+            <img src="{{ url_for('static', filename='images/logo.png') }}"
+                 alt="InternHub Logo"
+                 class="internhub-logo">
         </div>
+
         <span class="logo-brand-text">InternHub</span>
-      </a>
-    </div>
+    </a>
+</div>
 
     <!-- Navigation Links -->
     <nav class="sidebar-nav">
@@ -169,9 +172,14 @@
         </button>
 
         <!-- Notification Bell -->
-        <div class="topbar-notification-btn" title="Recent Notifications">
-          <i class="bi bi-bell"></i>
-          <span class="topbar-notif-badge"></span>
+        <div class="dropdown">
+          <div id="notificationBellBtn" class="topbar-notification-btn" title="Recent Notifications" role="button" tabindex="0" aria-label="Notifications" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-bell"></i>
+            <span class="topbar-notif-badge"></span>
+          </div>
+          <div id="notificationMenu" class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationBellBtn">
+            <span class="dropdown-item-text px-3 py-2 small text-muted">No notifications</span>
+          </div>
         </div>
 
         <!-- User Chip -->
@@ -264,9 +272,40 @@
       localStorage.setItem('theme', isDark ? 'dark' : 'light');
     });
   }
+
+  function setupNotificationBell() {
+    const bell = document.getElementById('notificationBellBtn');
+    const menu = document.getElementById('notificationMenu');
+    if (!bell || !menu) return;
+
+    const notificationsUrl = "{{ url_for('notifications') }}";
+
+    const handleBellClick = (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      window.location.href = notificationsUrl;
+    };
+
+    bell.addEventListener('click', handleBellClick);
+    bell.addEventListener('keydown', function (event) {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        handleBellClick(event);
+      }
+    });
+
+    document.addEventListener('click', function (event) {
+      if (!bell.contains(event.target) && !menu.contains(event.target)) {
+        menu.classList.remove('show');
+        bell.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
+
   document.addEventListener('DOMContentLoaded', function() {
     setupThemeToggle('themeToggleBtn');
     setupThemeToggle('themeToggleBtnPublic');
+    setupNotificationBell();
   });
 </script>
 

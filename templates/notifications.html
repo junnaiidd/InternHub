@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% block title %}Notifications — InternHub{% endblock %}
+
+{% block content %}
+<div class="fade-in-up">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 pb-2 border-bottom">
+    <div>
+      <h2 class="fw-bold mb-1">{{ heading }}</h2>
+      <p class="text-muted small mb-0">Latest platform activity and updates for your account.</p>
+    </div>
+    <a href="{{ url_for('dashboard') }}" class="btn btn-sm btn-tech-outline">
+      <i class="bi bi-arrow-left me-1"></i>Back to Dashboard
+    </a>
+  </div>
+
+  {% if recent_users or recent_applications %}
+    <div class="row g-4">
+      {% if recent_users %}
+      <div class="col-lg-6">
+        <div class="bento-card p-4">
+          <div class="d-flex align-items-center gap-2 mb-4 pb-3 border-bottom">
+            <div class="activity-icon-badge activity-icon-blue" style="width: 40px; height: 40px; font-size: 1rem;">
+              <i class="bi bi-person-plus-fill"></i>
+            </div>
+            <h5 class="fw-bold mb-0">Recent Registrations</h5>
+          </div>
+
+          <div class="d-flex flex-column gap-3">
+            {% for user in recent_users %}
+            <div class="d-flex align-items-center justify-content-between p-3 rounded-2" style="background-color: #f8f7f2;">
+              <div class="d-flex align-items-center gap-3">
+                <div class="activity-icon-badge {% if user.role == 'student' %}activity-icon-blue{% elif user.role == 'company' %}activity-icon-purple{% else %}activity-icon-orange{% endif %}" style="width: 36px; height: 36px; font-size: 0.8rem; flex-shrink: 0;">
+                  {{ user.email[0].upper() }}
+                </div>
+                <div>
+                  <div class="fw-semibold very-small">{{ user.email }}</div>
+                  <div class="text-muted very-small">
+                    {{ user.created_at.strftime('%d %b %Y at %H:%M') if user.created_at else 'Recently' }}
+                  </div>
+                </div>
+              </div>
+              <span class="badge {% if user.role == 'student' %}bg-primary-subtle text-primary{% elif user.role == 'company' %}bg-purple-subtle text-purple{% else %}bg-warning-subtle text-warning-emphasis{% endif %} fw-bold px-2 py-1 text-capitalize">{{ user.role }}</span>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      {% if recent_applications %}
+      <div class="col-lg-6">
+        <div class="bento-card p-4">
+          <div class="d-flex align-items-center gap-2 mb-4 pb-3 border-bottom">
+            <div class="activity-icon-badge activity-icon-teal" style="width: 40px; height: 40px; font-size: 1rem;">
+              <i class="bi bi-inbox-fill"></i>
+            </div>
+            <h5 class="fw-bold mb-0">Recent Applications</h5>
+          </div>
+
+          <div class="d-flex flex-column gap-3">
+            {% for app in recent_applications %}
+            <div class="p-3 rounded-2" style="background-color: #f8f7f2;">
+              <div class="d-flex align-items-start justify-content-between gap-2 mb-2">
+                <div class="d-flex align-items-center gap-2 flex-grow-1">
+                  <div class="activity-icon-badge activity-icon-teal" style="width: 32px; height: 32px; font-size: 0.7rem; flex-shrink: 0;">
+                    {{ app.full_name[0].upper() if app.full_name else 'S' }}
+                  </div>
+                  <div class="flex-grow-1 text-truncate">
+                    <div class="fw-semibold very-small text-truncate">{{ app.full_name or 'Unknown' }}</div>
+                    <div class="text-muted very-small text-truncate">{{ app.title }} @ {{ app.company_name }}</div>
+                  </div>
+                </div>
+                <span class="badge {% if app.status == 'pending' %}bg-warning-subtle text-warning-emphasis{% elif app.status == 'accepted' %}bg-success-subtle text-success{% else %}bg-danger-subtle text-danger{% endif %} fw-bold px-2 py-1 text-capitalize" style="flex-shrink: 0;">{{ app.status }}</span>
+              </div>
+              <div class="text-muted very-small">
+                {{ app.applied_at.strftime('%d %b %Y at %H:%M') if app.applied_at else 'Recently' }}
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  {% if timeline %}
+  <div class="row g-4 mt-1">
+    <div class="col-12">
+      <div class="bento-card p-4">
+        <div class="d-flex align-items-center gap-2 mb-4 pb-3 border-bottom">
+          <div class="activity-icon-badge activity-icon-purple" style="width: 40px; height: 40px; font-size: 1rem;">
+            <i class="bi bi-bell-fill"></i>
+          </div>
+          <h5 class="fw-bold mb-0">Your Activity</h5>
+        </div>
+
+        <div class="d-flex flex-column gap-3">
+          {% for item in timeline %}
+          <div class="p-3 rounded-2" style="background-color: #f8f7f2;">
+            <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap">
+              <div>
+                <div class="fw-semibold very-small">
+                  {% if session.get('role') == 'student' %}
+                    Application for {{ item.title }} at {{ item.company_name }}
+                  {% else %}
+                    Candidate {{ item.full_name }} applied for {{ item.title }}
+                  {% endif %}
+                </div>
+                <div class="text-muted very-small">
+                  {{ item.applied_at.strftime('%d %b %Y at %H:%M') if item.applied_at else 'Recently' }}
+                </div>
+              </div>
+              <span class="badge {% if item.status == 'pending' %}bg-warning-subtle text-warning-emphasis{% elif item.status == 'accepted' %}bg-success-subtle text-success{% else %}bg-danger-subtle text-danger{% endif %} fw-bold px-2 py-1 text-capitalize">{{ item.status }}</span>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+  {% else %}
+    <div class="bento-card p-5 text-center">
+      <i class="bi bi-bell-slash-fill fs-1 text-muted mb-3 d-block"></i>
+      <h5 class="fw-semibold">No notifications yet</h5>
+      <p class="text-muted mb-0">Your latest updates will appear here.</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

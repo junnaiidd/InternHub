@@ -38,7 +38,7 @@
         </a>
 
         <!-- Companies Card (Royal Purple) -->
-        <a href="{{ url_for('admin_users') }}" class="stat-hero-card card-purple">
+        <a href="{{ url_for('admin_companies') }}" class="stat-hero-card card-purple">
             <div class="stat-card-top">
                 <span class="stat-label-title">COMPANIES</span>
                 <div class="stat-icon-circle">
@@ -76,7 +76,7 @@
         </a>
 
         <!-- Applications Card (Coral) -->
-        <a href="{{ url_for('admin_internships') }}" class="stat-hero-card card-coral">
+        <a href="{{ url_for('admin_applications') }}" class="stat-hero-card card-coral">
             <div class="stat-card-top">
                 <span class="stat-label-title">APPLICATIONS</span>
                 <div class="stat-icon-circle">
@@ -485,6 +485,11 @@
                 </div>
                 {% if student.degree %}
                     <span class="badge role-badge role-student mb-2 d-inline-block">{{ student.degree }}</span>
+                {% endif %}
+                {% if student.github_profile_url %}
+                    <a href="{{ student.github_profile_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-tech-outline w-100 mt-2">
+                        <i class="bi bi-github me-1"></i>GitHub Profile
+                    </a>
                 {% endif %}
                 {% if student.resume_link %}
                     <a href="/{{ student.resume_link }}" target="_blank" class="btn btn-sm btn-tech-outline w-100 mt-2">

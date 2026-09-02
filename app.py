@@ -11,6 +11,7 @@ from threading import Thread
 import mysql.connector
 from functools import wraps
 import os
+from urllib.parse import urlparse
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 
 app = Flask(__name__)
@@ -61,6 +62,58 @@ def get_db():
     """Create and return a MySQL database connection."""
     conn = mysql.connector.connect(**DB_CONFIG)
     return conn
+
+
+def ensure_profile_schema():
+    """Add missing profile columns for older existing databases without breaking current users."""
+    conn = get_db()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        db_name = DB_CONFIG['database']
+        student_columns = ['bio', 'cgpa', 'linkedin_url', 'github_profile_url']
+        company_columns = ['bio', 'contact_email']
+
+        def add_missing_columns(table_name, columns):
+            for column_name in columns:
+                cursor.execute(
+                    """
+                    SELECT COUNT(*) AS cnt
+                    FROM INFORMATION_SCHEMA.COLUMNS
+                    WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = %s
+                    """,
+                    (db_name, table_name, column_name),
+                )
+                if cursor.fetchone()['cnt'] == 0:
+                    if table_name == 'students':
+                        if column_name == 'bio':
+                            cursor.execute("ALTER TABLE students ADD COLUMN bio TEXT NULL")
+                        elif column_name == 'cgpa':
+                            cursor.execute("ALTER TABLE students ADD COLUMN cgpa VARCHAR(10) NULL")
+                        elif column_name == 'linkedin_url':
+                            cursor.execute("ALTER TABLE students ADD COLUMN linkedin_url VARCHAR(255) NULL")
+                        elif column_name == 'github_profile_url':
+                            cursor.execute("ALTER TABLE students ADD COLUMN github_profile_url VARCHAR(255) NULL")
+                    elif table_name == 'companies':
+                        if column_name == 'bio':
+                            cursor.execute("ALTER TABLE companies ADD COLUMN bio TEXT NULL")
+                        elif column_name == 'contact_email':
+                            cursor.execute("ALTER TABLE companies ADD COLUMN contact_email VARCHAR(120) NULL")
+
+        add_missing_columns('students', student_columns)
+        add_missing_columns('companies', company_columns)
+        conn.commit()
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        cursor.close()
+        conn.close()
+
+
+@app.before_request
+def ensure_schema_before_request():
+    """Keep legacy databases compatible with the current profile schema."""
+    ensure_profile_schema()
 
 # ============================================================
 # DECORATORS - Role-based access control
@@ -348,7 +401,16 @@ def edit_profile():
                 bio = request.form.get('bio', '').strip()
                 cgpa = request.form.get('cgpa', '').strip()
                 linkedin_url = request.form.get('linkedin_url', '').strip()
-                
+                github_profile_url = request.form.get('github_profile_url', '').strip()
+
+                if github_profile_url:
+                    parsed = urlparse(github_profile_url)
+                    host = (parsed.netloc or '').lower()
+                    path = (parsed.path or '').lower()
+                    if parsed.scheme not in ('http', 'https') or not host or ('github.com' not in host and 'github.com' not in path):
+                        flash('Please enter a valid GitHub profile URL, such as https://github.com/username.', 'danger')
+                        return redirect(url_for('edit_profile'))
+
                 cursor.execute("SELECT resume_link FROM students WHERE user_id = %s", (user_id,))
                 current_resume = cursor.fetchone()['resume_link']
                 
@@ -370,9 +432,9 @@ def edit_profile():
                 
                 cursor.execute("""
                     UPDATE students 
-                    SET full_name=%s, phone=%s, college=%s, degree=%s, skills=%s, resume_link=%s, bio=%s, cgpa=%s, linkedin_url=%s
+                    SET full_name=%s, phone=%s, college=%s, degree=%s, skills=%s, resume_link=%s, bio=%s, cgpa=%s, linkedin_url=%s, github_profile_url=%s
                     WHERE user_id=%s
-                """, (full_name, phone, college, degree, skills, resume_link, bio, cgpa, linkedin_url, user_id))
+                """, (full_name, phone, college, degree, skills, resume_link, bio, cgpa, linkedin_url, github_profile_url, user_id))
                 
             elif role == 'company':
                 company_name = request.form.get('company_name', '').strip()
@@ -1337,46 +1399,82 @@ def admin_analytics():
                           top_companies=top_companies)
 
 # ============================================================
-# ROUTE: Admin - Notifications Center
+# ROUTE: Notifications Center
 # ============================================================
+@app.route('/notifications')
+@login_required
+def notifications():
+    """Display a role-aware notifications page for all logged-in users."""
+    role = session.get('role')
+    user_id = session.get('user_id')
+    notifications_data = {
+        'recent_users': [],
+        'recent_applications': [],
+        'timeline': [],
+        'heading': 'Notifications'
+    }
+
+    conn = get_db()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        if role == 'admin':
+            notifications_data['heading'] = 'System Notifications'
+            cursor.execute("""
+                SELECT id, email, role, created_at FROM users
+                ORDER BY created_at DESC LIMIT 5
+            """)
+            notifications_data['recent_users'] = cursor.fetchall()
+
+            cursor.execute("""
+                SELECT a.id, a.status, a.applied_at, s.full_name, i.title, c.company_name
+                FROM applications a
+                JOIN students s ON a.student_id = s.id
+                JOIN internships i ON a.internship_id = i.id
+                JOIN companies c ON i.company_id = c.id
+                ORDER BY a.applied_at DESC LIMIT 5
+            """)
+            notifications_data['recent_applications'] = cursor.fetchall()
+
+        elif role == 'student':
+            notifications_data['heading'] = 'Your Updates'
+            cursor.execute("""
+                SELECT a.id, a.status, a.applied_at, i.title, c.company_name
+                FROM applications a
+                JOIN internships i ON a.internship_id = i.id
+                JOIN companies c ON i.company_id = c.id
+                WHERE a.student_id = (SELECT id FROM students WHERE user_id = %s)
+                ORDER BY a.applied_at DESC LIMIT 5
+            """, (user_id,))
+            notifications_data['timeline'] = cursor.fetchall()
+
+        elif role == 'company':
+            notifications_data['heading'] = 'Company Alerts'
+            cursor.execute("""
+                SELECT a.id, a.status, a.applied_at, s.full_name, i.title
+                FROM applications a
+                JOIN students s ON a.student_id = s.id
+                JOIN internships i ON a.internship_id = i.id
+                WHERE i.company_id = (SELECT id FROM companies WHERE user_id = %s)
+                ORDER BY a.applied_at DESC LIMIT 5
+            """, (user_id,))
+            notifications_data['timeline'] = cursor.fetchall()
+
+        else:
+            notifications_data['timeline'] = []
+
+    finally:
+        cursor.close()
+        conn.close()
+
+    return render_template('notifications.html', **notifications_data)
+
+
 @app.route('/admin/notifications')
 @login_required
 @role_required('admin')
 def admin_notifications():
-    """Admin views system notifications and alerts."""
-    # For now, return a placeholder - this would track system events in production
-    notifications = {
-        'recent_users': [],
-        'recent_applications': [],
-        'recent_updates': []
-    }
-    
-    conn = get_db()
-    cursor = conn.cursor(dictionary=True)
-    try:
-        # Recent new users
-        cursor.execute("""
-            SELECT id, email, role, created_at FROM users
-            ORDER BY created_at DESC LIMIT 5
-        """)
-        notifications['recent_users'] = cursor.fetchall()
-        
-        # Recent applications
-        cursor.execute("""
-            SELECT a.id, a.status, a.applied_at, s.full_name, i.title, c.company_name
-            FROM applications a
-            JOIN students s ON a.student_id = s.id
-            JOIN internships i ON a.internship_id = i.id
-            JOIN companies c ON i.company_id = c.id
-            ORDER BY a.applied_at DESC LIMIT 5
-        """)
-        notifications['recent_applications'] = cursor.fetchall()
-        
-    finally:
-        cursor.close()
-        conn.close()
-    
-    return render_template('admin_notifications.html', **notifications)
+    """Backward-compatible admin notifications page."""
+    return redirect(url_for('notifications'))
 
 # ============================================================
 # ROUTE: Forgot Password

@@ -32,6 +32,10 @@ CREATE TABLE IF NOT EXISTS students (
     graduation_year YEAR,
     skills TEXT,
     resume_link VARCHAR(255),
+    bio TEXT,
+    cgpa VARCHAR(10),
+    linkedin_url VARCHAR(255),
+    github_profile_url VARCHAR(255),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
@@ -47,6 +51,8 @@ CREATE TABLE IF NOT EXISTS companies (
     website VARCHAR(255),
     description TEXT,
     location VARCHAR(100),
+    bio TEXT,
+    contact_email VARCHAR(120),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
