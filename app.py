@@ -55,7 +55,8 @@ DB_CONFIG = {
     'user': os.environ.get('DB_USER'),
     'password': os.environ.get('DB_PASSWORD'),
     'database': os.environ.get('DB_NAME'),
-    'ssl_disabled': False
+    'ssl_disabled': False,
+    'ssl_verify_cert': False
 }
 
 def get_db():
