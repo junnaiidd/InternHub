@@ -1749,9 +1749,7 @@ def request_entity_too_large(e):
 
 @app.errorhandler(500)
 def internal_server_error(e):
-    """Handle 500 internal server errors gracefully."""
-    flash("An internal server error occurred. Please try again later.", "danger")
-    return redirect(url_for('dashboard') if 'user_id' in session else url_for('index'))
+    return "Internal Server Error. Check Vercel logs.", 500
 
 # ============================================================
 # RUN APPLICATION
