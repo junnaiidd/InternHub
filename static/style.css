@@ -1273,3 +1273,114 @@ html.dark .topbar-theme-knob {
     object-fit: contain;
     object-position: center;
 }
+/* ================================================================
+   INTERNSHIP SKILL MATCH SYSTEM
+================================================================ */
+
+.skill-match-card {
+  background: var(--surface-subtle);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 0.9rem 1rem;
+}
+
+.skill-match-title {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.skill-match-score {
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 0.3rem 0.65rem;
+  border-radius: var(--r-pill);
+}
+
+/* Score colours */
+
+.score-excellent {
+  background: var(--teal-soft);
+  color: var(--teal);
+}
+
+.score-moderate {
+  background: var(--yellow-soft);
+  color: var(--orange-hover);
+}
+
+.score-low {
+  background: var(--coral-soft);
+  color: var(--coral);
+}
+
+
+/* Progress Bar */
+
+.skill-match-progress {
+  height: 7px;
+  width: 100%;
+  background: var(--border);
+  border-radius: var(--r-pill);
+  overflow: hidden;
+}
+
+.skill-match-fill {
+  height: 100%;
+  border-radius: var(--r-pill);
+  transition: width 0.4s ease;
+}
+
+.fill-excellent {
+  background: var(--teal);
+}
+
+.fill-moderate {
+  background: var(--orange);
+}
+
+.fill-low {
+  background: var(--coral);
+}
+
+
+/* Missing Skill Badges */
+
+.skill-gap-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.skill-gap-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  background: var(--coral-soft);
+  color: var(--coral-hover);
+  padding: 0.22rem 0.5rem;
+  border-radius: var(--r-pill);
+}
+
+
+/* Perfect Match */
+
+.perfect-match-message {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--teal);
+}
+
+
+/* Match Indicator */
+
+.match-excellent {
+  border-left: 3px solid var(--teal);
+}
+
+.match-moderate {
+  border-left: 3px solid var(--orange);
+}
+
+.match-low {
+  border-left: 3px solid var(--coral);
+}

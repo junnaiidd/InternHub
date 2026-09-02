@@ -156,6 +156,85 @@ def role_required(*roles):
     return decorator
 
 # ============================================================
+# SKILL MATCHING SYSTEM
+# ============================================================
+
+def calculate_skill_match(student_skills, required_skills):
+
+    def get_skills(value):
+        if not value:
+            return []
+
+        skills = []
+        seen = set()
+
+        for skill in str(value).split(','):
+            skill = skill.strip()
+
+            if skill:
+                skill_lower = skill.lower()
+
+                if skill_lower not in seen:
+                    skills.append(skill)
+                    seen.add(skill_lower)
+
+        return skills
+
+    student = get_skills(student_skills)
+    required = get_skills(required_skills)
+
+    # No skills have been specified for this internship
+    if not required:
+        return {
+            'has_skill_requirements': False,
+            'student_has_skills': len(student) > 0,
+            'match_percentage': None,
+            'matched_skills': [],
+            'missing_skills': [],
+            'match_level': None
+        }
+
+    # Student has not added any skills
+    if not student:
+        return {
+            'has_skill_requirements': True,
+            'student_has_skills': False,
+            'match_percentage': 0,
+            'matched_skills': [],
+            'missing_skills': required,
+            'match_level': 'low'
+        }
+
+    student_set = set(skill.lower() for skill in student)
+
+    matched = []
+    missing = []
+
+    for skill in required:
+        if skill.lower() in student_set:
+            matched.append(skill)
+        else:
+            missing.append(skill)
+
+    percentage = round((len(matched) / len(required)) * 100)
+
+    if percentage >= 75:
+        level = 'excellent'
+    elif percentage >= 50:
+        level = 'moderate'
+    else:
+        level = 'low'
+
+    return {
+        'has_skill_requirements': True,
+        'student_has_skills': True,
+        'match_percentage': percentage,
+        'matched_skills': matched,
+        'missing_skills': missing,
+        'match_level': level
+    }
+
+# ============================================================
 # ROUTE: Home Page
 # ============================================================
 @app.route('/')
@@ -531,6 +610,7 @@ def internships():
     conn = get_db()
     cursor = conn.cursor(dictionary=True)
     applied_ids = set()
+    saved_ids = set()
 
     try:
         # Get search/filter params
@@ -581,17 +661,54 @@ def internships():
         cursor.execute(query, params)
         all_internships = cursor.fetchall()
 
-        # If student, find which ones they've already applied to and saved
-        saved_ids = set()
-        if session['role'] == 'student':
-            cursor.execute("SELECT id FROM students WHERE user_id = %s", (session['user_id'],))
+        # If student, calculate skill matches and find applied/saved internships
+        if session.get('role') == 'student':
+
+            cursor.execute("""
+                SELECT id, skills
+                FROM students
+                WHERE user_id = %s
+            """, (session['user_id'],))
+
             student = cursor.fetchone()
+
             if student:
-                cursor.execute("SELECT internship_id FROM applications WHERE student_id = %s", (student['id'],))
-                applied_ids = {row['internship_id'] for row in cursor.fetchall()}
-                
-                cursor.execute("SELECT internship_id FROM saved_internships WHERE student_id = %s", (student['id'],))
-                saved_ids = {row['internship_id'] for row in cursor.fetchall()}
+
+                student_skills = student['skills'] or ''
+
+                # Calculate skill match for every internship
+                for job in all_internships:
+
+                    match_data = calculate_skill_match(
+                        student_skills,
+                        job['skills_required'] or ''
+                    )
+
+                    job.update(match_data)
+
+                # Get applied internships
+                cursor.execute("""
+                    SELECT internship_id
+                    FROM applications
+                    WHERE student_id = %s
+                """, (student['id'],))
+
+                applied_ids = {
+                    row['internship_id']
+                    for row in cursor.fetchall()
+                }
+
+                # Get saved internships
+                cursor.execute("""
+                    SELECT internship_id
+                    FROM saved_internships
+                    WHERE student_id = %s
+                """, (student['id'],))
+
+                saved_ids = {
+                    row['internship_id']
+                    for row in cursor.fetchall()
+                }
 
     finally:
         cursor.close()
