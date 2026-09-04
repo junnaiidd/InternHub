@@ -1384,3 +1384,782 @@ html.dark .topbar-theme-knob {
 .match-low {
   border-left: 3px solid var(--coral);
 }
+
+
+/* ================================================================
+   MISSING UTILITY CLASSES
+   These classes are referenced throughout templates but were not
+   defined in the original stylesheet.
+================================================================ */
+
+/* Page entry animation — used on every page's fade-in-up wrapper */
+.fade-in-up {
+  animation: fadeInUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Very-small text helper — used extensively throughout templates */
+.very-small {
+  font-size: 0.72rem !important;
+}
+
+/* ─── Activity icon background variants (missing from original) ─── */
+/* Green variant — used in admin_applications (Accepted count) and admin_notifications (System Info) */
+.activity-icon-green {
+  background: var(--teal);
+}
+
+/* Red variant — used in admin_applications (Rejected count) */
+.activity-icon-red {
+  background: var(--coral);
+}
+
+/* Orange / amber variant — used for admin role badges in admin pages */
+.activity-icon-orange {
+  background: var(--orange);
+}
+
+/* ─── Blue-soft standalone badge class ─── */
+/* Used as: <span class="badge blue-soft fw-bold ..."> */
+.badge.blue-soft,
+span.blue-soft {
+  background-color: var(--blue-soft);
+  color: var(--blue);
+}
+
+/* ─── Purple-subtle for Bootstrap-style purple badges ─── */
+/* Used as bg-purple-subtle text-purple in templates */
+.bg-purple-subtle {
+  background-color: var(--purple-soft) !important;
+}
+.text-purple {
+  color: var(--purple) !important;
+}
+
+
+/* ================================================================
+   DARK MODE — COMPREHENSIVE OVERRIDES
+   All rules below apply only when the html.dark class is active.
+================================================================ */
+
+/* ── 1. TABLE HEADERS: Fix hardcoded #f8f7f2 backgrounds ─────────
+   All admin and company tables use:
+     <thead style="background: #f8f7f2;">
+   Inline styles have the highest specificity so we need !important.
+────────────────────────────────────────────────────────────────── */
+html.dark table thead,
+html.dark table thead tr {
+  background-color: var(--surface-subtle) !important;
+}
+
+html.dark table thead th {
+  background-color: var(--surface-subtle) !important;
+  color: var(--text-muted) !important;
+  border-bottom-color: var(--border) !important;
+}
+
+/* Bootstrap table body rows */
+html.dark .table > tbody > tr > td,
+html.dark .table > tbody > tr > th {
+  background-color: transparent;
+  color: var(--text-main);
+  border-bottom-color: var(--border);
+}
+
+/* ── 2. TABLE HOVER: Fix Bootstrap's hardcoded rgba hover ─────── */
+html.dark .table-hover > tbody > tr:hover > td,
+html.dark .table-hover > tbody > tr:hover > th {
+  background-color: var(--surface-hover) !important;
+  color: var(--text-main) !important;
+}
+
+/* Overall table background */
+html.dark .table {
+  color: var(--text-main);
+  border-color: var(--border);
+}
+
+html.dark .table-borderless > :not(caption) > * > * {
+  border-bottom-color: transparent;
+}
+
+/* ── 3. NOTIFICATION / ACTIVITY ROWS: Fix #f8f7f2 inline bgs ─── 
+   In admin_notifications.html and notifications.html the activity
+   and timeline rows use style="background-color: #f8f7f2;"
+   We target these via their structural context.
+────────────────────────────────────────────────────────────────── */
+html.dark .bento-card .rounded-2 {
+  background-color: var(--surface-hover) !important;
+  color: var(--text-main);
+}
+
+html.dark .bento-card .rounded-3 {
+  background-color: var(--surface-hover) !important;
+  color: var(--text-main);
+}
+
+/* Ensure text inside these rounded containers stays readable */
+html.dark .bento-card .rounded-2 .fw-semibold,
+html.dark .bento-card .rounded-3 .fw-semibold {
+  color: var(--text-main);
+}
+
+html.dark .bento-card .rounded-2 .text-muted,
+html.dark .bento-card .rounded-3 .text-muted {
+  color: var(--text-muted) !important;
+}
+
+/* ── 4. COVER LETTER PREVIEW BOXES ───────────────────────────────
+   student_applications.html and view_applications.html use:
+     class="... bg-light border-start border-3 border-primary flex-grow-1"
+   The bg-light override is already in the main dark rules, but
+   the border-start color can also need adjustment.
+────────────────────────────────────────────────────────────────── */
+html.dark .bg-light {
+  background-color: var(--surface-hover) !important;
+  color: var(--text-main) !important;
+}
+
+/* ── 5. AUTH FORM DIVIDER SPANS ──────────────────────────────────
+   login.html and register.html use:
+     <span class="... bg-white">New to InternHub?</span>
+   This creates a white rectangle in dark mode.
+────────────────────────────────────────────────────────────────── */
+html.dark .auth-right-form span.bg-white,
+html.dark .auth-right-form .bg-white {
+  background-color: var(--surface) !important;
+  color: var(--text-muted) !important;
+}
+
+html.dark .bg-white {
+  background-color: var(--surface-subtle) !important;
+  color: var(--text-main) !important;
+}
+
+/* ── 6. RESUME / FIELD-GROUP SECTION BOXES ───────────────────────
+   apply.html, edit_profile.html, and register.html have sections:
+     class="p-3 mb-4 rounded-3 border bg-light"
+   These need a dark background.
+────────────────────────────────────────────────────────────────── */
+html.dark .border.bg-light,
+html.dark [class*="border"].bg-light,
+html.dark .p-3.rounded-3.border.bg-light,
+html.dark .p-3.mb-4.rounded-3.border {
+  background-color: var(--surface-subtle) !important;
+  border-color: var(--border) !important;
+  color: var(--text-main);
+}
+
+/* ── 7. COMPANY PROFILE BIO PANEL ────────────────────────────────
+   company_profile.html uses:
+     class="p-3 rounded-3 bg-light border h-100"
+────────────────────────────────────────────────────────────────── */
+html.dark .bento-card .bg-light.border.h-100 {
+  background-color: var(--surface-hover) !important;
+  border-color: var(--border) !important;
+}
+
+/* ── 8. REGISTER PAGE ROLE SELECTOR CARDS ────────────────────────
+   The "Student" / "Company" role cards use text-dark which can
+   cause dark text on dark backgrounds in dark mode.
+────────────────────────────────────────────────────────────────── */
+html.dark .auth-right-form strong.text-dark {
+  color: var(--text-main) !important;
+}
+
+html.dark #roleCardStudent strong,
+html.dark #roleCardCompany strong {
+  color: var(--text-main) !important;
+}
+
+/* ── 9. APPLY / INTERNSHIP DETAIL "text-dark" STRONGS ────────────
+   apply.html uses <strong class="text-dark"> for inline field
+   values like Location, Duration, Positions, etc.
+────────────────────────────────────────────────────────────────── */
+html.dark strong.text-dark {
+  color: var(--text-main) !important;
+}
+
+/* ── 10. COMPANY PROFILE ACTIVE LISTINGS COUNT ───────────────────
+   company_profile.html: <strong class="small text-dark">
+────────────────────────────────────────────────────────────────── */
+html.dark .small.text-dark {
+  color: var(--text-main) !important;
+}
+
+/* ── 11. INTERNSHIP CARDS — DETAIL TAGS ─────────────────────────
+   internships.html, saved_internships.html, company_profile.html:
+     <span class="badge bg-light text-dark border">
+   These appear as light grey pills which are invisible in dark mode.
+────────────────────────────────────────────────────────────────── */
+html.dark .badge.bg-light {
+  background-color: var(--surface-hover) !important;
+  color: var(--text-secondary) !important;
+  border-color: var(--border) !important;
+}
+
+/* ── 12. TOPBAR SEARCH SHORTCUT BADGE ───────────────────────────
+   base.html: <span class="badge bg-light text-dark border">⌘K</span>
+   This is the keyboard shortcut indicator in the topbar search.
+────────────────────────────────────────────────────────────────── */
+html.dark .search-shortcut-badge .badge {
+  background-color: var(--surface-hover) !important;
+  color: var(--text-muted) !important;
+  border-color: var(--border) !important;
+}
+
+/* ── 13. BOOTSTRAP BADGE SUBTLES — DARK MODE ─────────────────────
+   Bootstrap's subtle badge colors are designed for white/light
+   backgrounds. In dark mode they appear as faint, washed-out tints
+   with poor contrast. We replace them with our own palette.
+────────────────────────────────────────────────────────────────── */
+
+/* Blue / Primary */
+html.dark .bg-primary-subtle {
+  background-color: rgba(40, 123, 229, 0.18) !important;
+}
+html.dark .text-primary {
+  color: #6AADFF !important;
+}
+
+/* Green / Success / Teal */
+html.dark .bg-success-subtle {
+  background-color: rgba(53, 165, 138, 0.18) !important;
+}
+html.dark .text-success {
+  color: #4FC3A5 !important;
+}
+
+/* Yellow / Warning */
+html.dark .bg-warning-subtle {
+  background-color: rgba(244, 211, 94, 0.15) !important;
+}
+html.dark .text-warning {
+  color: #F4D35E !important;
+}
+html.dark .text-warning-emphasis {
+  color: #EDCC55 !important;
+}
+
+/* Red / Danger / Coral */
+html.dark .bg-danger-subtle {
+  background-color: rgba(240, 100, 90, 0.18) !important;
+}
+html.dark .text-danger {
+  color: #F57575 !important;
+}
+
+/* Grey / Secondary */
+html.dark .bg-secondary-subtle {
+  background-color: rgba(148, 163, 184, 0.12) !important;
+}
+html.dark .text-secondary {
+  color: var(--text-muted) !important;
+}
+
+/* Purple (custom, not a Bootstrap default) */
+html.dark .bg-purple-subtle {
+  background-color: rgba(115, 83, 232, 0.18) !important;
+}
+html.dark .text-purple {
+  color: #A58EF8 !important;
+}
+
+/* ── 14. BLUE-SOFT BADGE IN DARK MODE ───────────────────────────
+   Used in internships.html ("Verified Partners"), edit_profile.html
+   role badge, and company_profile.html industry badge.
+────────────────────────────────────────────────────────────────── */
+html.dark .badge.blue-soft,
+html.dark span.blue-soft {
+  background-color: rgba(40, 123, 229, 0.18);
+  color: #6AADFF;
+}
+
+/* ── 15. PAGINATION — DARK MODE ──────────────────────────────────
+   Bootstrap's pagination has white backgrounds and dark borders.
+────────────────────────────────────────────────────────────────── */
+html.dark .page-link {
+  background-color: var(--surface);
+  border-color: var(--border);
+  color: var(--text-secondary);
+}
+
+html.dark .page-link:hover {
+  background-color: var(--surface-hover);
+  border-color: var(--border);
+  color: var(--text-main);
+}
+
+html.dark .page-item.active .page-link {
+  background-color: var(--blue);
+  border-color: var(--blue);
+  color: #FFFFFF;
+}
+
+html.dark .page-item.disabled .page-link {
+  background-color: var(--surface-subtle);
+  border-color: var(--border);
+  color: var(--text-light);
+}
+
+/* ── 16. PROGRESS BARS — DARK MODE ──────────────────────────────
+   Bootstrap's .progress has a light-grey background track.
+────────────────────────────────────────────────────────────────── */
+html.dark .progress {
+  background-color: var(--surface-hover);
+  border-radius: var(--r-pill);
+}
+
+html.dark .progress-bar.bg-warning {
+  background-color: var(--yellow) !important;
+}
+
+html.dark .progress-bar.bg-success {
+  background-color: var(--teal) !important;
+}
+
+html.dark .progress-bar.bg-danger {
+  background-color: var(--coral) !important;
+}
+
+/* ── 17. FORM LABELS — DARK MODE ────────────────────────────────
+   Bootstrap form-label defaults to a slightly grey text that can
+   become invisible on dark backgrounds.
+────────────────────────────────────────────────────────────────── */
+html.dark .form-label {
+  color: var(--text-secondary);
+}
+
+/* ── 18. FORM-CONTROL / SELECT — AUTOFILL FIX ───────────────────
+   Browser autofill injects a blue/yellow background that overrides
+   CSS. This trick uses animation delay to suppress it.
+────────────────────────────────────────────────────────────────── */
+html.dark .form-control:-webkit-autofill,
+html.dark .form-control:-webkit-autofill:hover,
+html.dark .form-control:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0px 1000px var(--surface-subtle) inset !important;
+  -webkit-text-fill-color: var(--text-main) !important;
+  caret-color: var(--text-main);
+  border-color: var(--border) !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* ── 19. FILE INPUT — DARK MODE ─────────────────────────────────
+   Bootstrap's file input has a light grey button stub.
+────────────────────────────────────────────────────────────────── */
+html.dark .form-control[type="file"] {
+  background-color: var(--surface);
+  color: var(--text-main);
+  border-color: var(--border);
+}
+
+html.dark .form-control[type="file"]::file-selector-button {
+  background-color: var(--surface-hover);
+  color: var(--text-secondary);
+  border-color: var(--border);
+  border-right-color: var(--border);
+}
+
+html.dark .form-control[type="file"]::file-selector-button:hover {
+  background-color: var(--surface-subtle);
+  color: var(--text-main);
+}
+
+/* ── 20. SELECT DROPDOWN OPTION TEXT ───────────────────────────
+   <select> option elements inherit OS styling. On some browsers
+   this means dark text on a dark dropdown background.
+────────────────────────────────────────────────────────────────── */
+html.dark .form-select option {
+  background-color: var(--surface-subtle);
+  color: var(--text-main);
+}
+
+/* ── 21. MODAL HEADER / FOOTER ──────────────────────────────────
+   Bootstrap modal-header / modal-footer have bottom/top borders.
+────────────────────────────────────────────────────────────────── */
+html.dark .modal-header {
+  background-color: var(--surface);
+  border-bottom-color: var(--border);
+  color: var(--text-main);
+}
+
+html.dark .modal-footer {
+  background-color: var(--surface);
+  border-top-color: var(--border);
+}
+
+html.dark .modal-body {
+  background-color: var(--surface);
+  color: var(--text-main);
+}
+
+html.dark .btn-close {
+  filter: invert(1) grayscale(1);
+}
+
+/* ── 22. HORIZONTAL RULE / DIVIDERS ─────────────────────────────
+   <hr> elements in auth pages and modals.
+────────────────────────────────────────────────────────────────── */
+html.dark hr {
+  border-color: var(--border);
+  opacity: 1;
+}
+
+html.dark .border-bottom {
+  border-bottom-color: var(--border) !important;
+}
+
+html.dark .border-top {
+  border-top-color: var(--border) !important;
+}
+
+/* ── 23. STATUS-BADGE VISIBILITY IN DARK MODE ───────────────────
+   The custom .status-badge uses .status-pending, .status-accepted,
+   .status-rejected which reference CSS vars (yellow-soft, teal-soft,
+   coral-soft). These work in dark mode via the vars, but the text
+   colors need a slight bump in luminance for better contrast.
+────────────────────────────────────────────────────────────────── */
+html.dark .status-pending {
+  background: rgba(244, 211, 94, 0.15);
+  color: #EDCC55;
+}
+
+html.dark .status-accepted {
+  background: rgba(53, 165, 138, 0.15);
+  color: #4FC3A5;
+}
+
+html.dark .status-rejected {
+  background: rgba(240, 100, 90, 0.18);
+  color: #F07575;
+}
+
+/* ── 24. ROLE BADGE VISIBILITY IN DARK MODE ─────────────────────
+   .role-student, .role-company, .role-admin use *-soft vars which
+   are light pastel tints — boost luminance for dark mode.
+────────────────────────────────────────────────────────────────── */
+html.dark .role-student {
+  background: rgba(40, 123, 229, 0.18);
+  color: #6AADFF;
+}
+
+html.dark .role-company {
+  background: rgba(115, 83, 232, 0.18);
+  color: #A58EF8;
+}
+
+html.dark .role-admin {
+  background: rgba(240, 100, 90, 0.18);
+  color: #F07575;
+}
+
+/* ── 25. SIDEBAR BADGE (NOTIFICATIONS COUNT) ────────────────────
+   .sidebar-badge always stays coral — already fine.
+   Keep the sidebar-link text always at max readability.
+────────────────────────────────────────────────────────────────── */
+html.dark .sidebar-link span:not(.sidebar-badge) {
+  color: inherit;
+}
+
+/* ── 26. SKILL MATCH CARD — DARK MODE ───────────────────────────
+   .skill-match-card uses --surface-subtle bg and --border border.
+   These are already CSS-var based so they adapt automatically.
+   Tag colour badges (.tag-yellow, .tag-mint, etc.) are light by
+   design and remain so for readability on skill pills.
+────────────────────────────────────────────────────────────────── */
+html.dark .skill-match-card {
+  background: var(--surface-subtle);
+  border-color: var(--border);
+}
+
+html.dark .skill-match-title {
+  color: var(--text-secondary);
+}
+
+html.dark .skill-gap-label {
+  color: var(--text-muted);
+}
+
+html.dark .skill-gap-badge {
+  background: rgba(240, 100, 90, 0.18);
+  color: #F07575;
+}
+
+html.dark .skill-match-progress {
+  background: var(--surface-hover);
+}
+
+/* ── 27. DANGER ZONE CARD BORDER ───────────────────────────────
+   edit_profile.html: bento-card with border border-danger-subtle
+────────────────────────────────────────────────────────────────── */
+html.dark .border-danger-subtle {
+  border-color: rgba(240, 100, 90, 0.35) !important;
+}
+
+/* ── 28. ACTIVE FILTER BAR — internships.html ───────────────────
+   Uses: class="... bg-white border"
+────────────────────────────────────────────────────────────────── */
+html.dark .bg-white.border,
+html.dark [class*="bg-white"][class*="border"] {
+  background-color: var(--surface-subtle) !important;
+  border-color: var(--border) !important;
+  color: var(--text-main) !important;
+}
+
+/* ── 29. ANALYTICS PAGE — TABLE BORDERLESS ───────────────────────
+   admin_analytics.html uses Bootstrap .table-borderless inside
+   bento-cards. The td padding and colour need to be consistent.
+────────────────────────────────────────────────────────────────── */
+html.dark .table-borderless td,
+html.dark .table-borderless th {
+  color: var(--text-main);
+  border: none;
+}
+
+/* ── 30. ALERT COLOURS — VISIBILITY IN DARK MODE ────────────────
+   Base.html flash messages use Bootstrap alert variants. The
+   existing rule sets background to --surface-subtle but text
+   colour for each variant needs to remain readable.
+────────────────────────────────────────────────────────────────── */
+html.dark .alert-success {
+  background-color: rgba(53, 165, 138, 0.12) !important;
+  border-color: rgba(53, 165, 138, 0.3) !important;
+  color: #4FC3A5 !important;
+}
+
+html.dark .alert-danger {
+  background-color: rgba(240, 100, 90, 0.12) !important;
+  border-color: rgba(240, 100, 90, 0.3) !important;
+  color: #F07575 !important;
+}
+
+html.dark .alert-warning {
+  background-color: rgba(244, 211, 94, 0.12) !important;
+  border-color: rgba(244, 211, 94, 0.3) !important;
+  color: #F4D35E !important;
+}
+
+html.dark .alert-info {
+  background-color: rgba(40, 123, 229, 0.12) !important;
+  border-color: rgba(40, 123, 229, 0.3) !important;
+  color: #6AADFF !important;
+}
+
+html.dark .alert .btn-close {
+  filter: invert(0.8) grayscale(1);
+}
+
+/* ── 31. DROPDOWN MENU ITEMS — DARK MODE ─────────────────────── */
+html.dark .dropdown-menu {
+  background-color: var(--surface);
+  border-color: var(--border);
+  box-shadow: var(--shadow-md);
+}
+
+html.dark .dropdown-item {
+  color: var(--text-main);
+}
+
+html.dark .dropdown-item-text {
+  color: var(--text-muted);
+}
+
+html.dark .dropdown-divider {
+  border-color: var(--border);
+}
+
+/* ── 32. DISABLED BUTTONS — READABLE IN DARK MODE ───────────────
+   student_applications.html has a disabled "Locked" button.
+────────────────────────────────────────────────────────────────── */
+html.dark .btn-tech-outline[disabled],
+html.dark .btn-tech-outline:disabled {
+  background-color: var(--surface-subtle);
+  color: var(--text-light);
+  border-color: var(--border);
+  opacity: 0.65;
+}
+
+/* ── 33. SCROLLBAR THEMING IN DARK MODE (sidebar, modals) ───────
+   Scrollable sidebars and modal-body look better with a dark scrollbar.
+────────────────────────────────────────────────────────────────── */
+html.dark .app-sidebar::-webkit-scrollbar,
+html.dark .modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+html.dark .app-sidebar::-webkit-scrollbar-track,
+html.dark .modal-body::-webkit-scrollbar-track {
+  background: var(--bg-sidebar-dark);
+}
+
+html.dark .app-sidebar::-webkit-scrollbar-thumb,
+html.dark .modal-body::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+/* ── 34. PUBLIC NAV (INDEX / AUTH PAGES) — DARK MODE ────────────
+   The public nav background is --surface which already adapts, but
+   the logo brand text uses text-dark class.
+────────────────────────────────────────────────────────────────── */
+html.dark .public-nav .logo-brand-text {
+  color: var(--text-main);
+}
+
+/* ── 35. TABLE-RESPONSIVE WRAPPER ───────────────────────────────
+   The .bento-card wrapping tables should have its background
+   consistent. Already handled by .bento-card rule, but ensure
+   .table-responsive doesn't introduce a white bg.
+────────────────────────────────────────────────────────────────── */
+html.dark .table-responsive {
+  background-color: transparent;
+}
+
+/* ── 36. INTERNSHIP ACTIVE FILTER BAR text-muted INSIDE ─────────
+   internships.html filter bar: text-muted "Active filters:" label
+────────────────────────────────────────────────────────────────── */
+html.dark .text-muted {
+  color: var(--text-muted) !important;
+}
+
+/* ── 37. SIDEBAR USER EMAIL TEXT ────────────────────────────────
+   base.html sidebar footer shows user email with fw-bold text-white.
+   text-white is always fine in the dark sidebar — confirmed safe.
+   The role badge inside the sidebar footer:
+────────────────────────────────────────────────────────────────── */
+html.dark .sidebar-footer .role-badge {
+  /* Already handled by role-badge dark mode overrides above */
+}
+
+/* ── 38. FEATURE BANNER CARD TITLE ──────────────────────────────
+   The .feature-banner-title is an h-level element using --text-main.
+   Already adapts via CSS var. Ensure the card itself is correct.
+────────────────────────────────────────────────────────────────── */
+html.dark .feature-banner-card {
+  background: var(--surface-subtle) !important;
+}
+
+html.dark .feature-banner-title {
+  color: var(--text-main);
+}
+
+/* ── 39. SCORE / TAG PILLS — LIGHT MODE ONLY ────────────────────
+   .tag-yellow, .tag-mint, .tag-lavender, .tag-orange are used in
+   the right-side deadline panel and are intentionally light-coloured
+   pastel pills on a white card. In dark mode they still look fine as
+   they are small accent icons with strong text contrast.
+   No override needed — confirmed acceptable.
+────────────────────────────────────────────────────────────────── */
+
+/* ── 40. GLOBAL LINK COLOUR — DARK MODE ────────────────────────
+   Ensure anchor tags in dark mode are visible without being neon.
+────────────────────────────────────────────────────────────────── */
+html.dark a:not([class]) {
+  color: #6AADFF;
+}
+
+html.dark a:not([class]):hover {
+  color: #89BDFF;
+}
+
+/* ── 41. HR SEPARATOR IN AUTH FORMS ─────────────────────────────
+   The .border-secondary-subtle hr in login/register pages
+────────────────────────────────────────────────────────────────── */
+html.dark .border-secondary-subtle {
+  border-color: var(--border) !important;
+}
+
+/* ── 42. INTERNSHIP SEARCH FORM — BENTO CARD HEADER ALIGNMENT ──
+   Ensure the "Verified Partners" badge on the internships filter
+   banner is readable in dark mode (it uses .badge.blue-soft).
+   Already handled by rule #14 above.
+────────────────────────────────────────────────────────────────── */
+
+/* ── 43. STAT HERO CARD BACKGROUND DECORATION ───────────────────
+   The pseudo-element ripple pattern on stat cards.
+   These always have color: #FFFFFF set so they're always fine.
+────────────────────────────────────────────────────────────────── */
+
+/* ── 44. LIST GROUP — DARK MODE ─────────────────────────────────
+   Bootstrap list groups are already partially covered by the main
+   dark rule, but we ensure item hover and active states.
+────────────────────────────────────────────────────────────────── */
+html.dark .list-group-item {
+  background-color: var(--surface);
+  border-color: var(--border);
+  color: var(--text-main);
+}
+
+html.dark .list-group-item:hover {
+  background-color: var(--surface-hover);
+  color: var(--text-main);
+}
+
+/* ── 45. BENTO CARD HOVER BORDER STRONG ─────────────────────────
+   .bento-card:hover changes border to --border-strong.
+   Ensure this is still visible in dark mode.
+────────────────────────────────────────────────────────────────── */
+html.dark .bento-card:hover {
+  border-color: var(--border-strong);
+}
+
+/* ── 46. BADGE GENERAL INHERIT RULE FIX ─────────────────────────
+   The existing html.dark .badge rule sets color: inherit which can
+   sometimes cause issues with role-badge overrides above.
+   We re-apply colour for our custom badges explicitly.
+────────────────────────────────────────────────────────────────── */
+html.dark .badge {
+  /* Reset to allow specific badge overrides to take effect */
+  color: inherit;
+}
+
+/* GPA badge in view_applications and all_applicants */
+html.dark .badge.bg-success-subtle.text-success {
+  color: #4FC3A5 !important;
+}
+
+/* ── 47. INTERNSHIP CARD APPLIED BADGE ──────────────────────────
+   internships.html: <span class="badge bg-primary-subtle text-primary">Applied</span>
+   Already handled by rule #13.
+────────────────────────────────────────────────────────────────── */
+
+/* ── 48. POST INTERNSHIP & EDIT APPLICATION FORM PAGES ──────────
+   post_internship.html and edit_application.html inherit all form
+   dark mode rules from above (form-control, form-label, etc.)
+   No additional overrides needed.
+────────────────────────────────────────────────────────────────── */
+
+/* ── 49. TOPBAR TIMESTAMP COLOUR ────────────────────────────────
+   Already handled by --text-muted on .timestamp-indicator.
+────────────────────────────────────────────────────────────────── */
+
+/* ── 50. FINAL CATCH-ALL: Plain <small> text visibility ─────────
+   Bootstrap's small elements inherit their parent colour.
+   Ensure they stay readable in dark containers.
+────────────────────────────────────────────────────────────────── */
+html.dark .bento-card small,
+html.dark .bento-card .small {
+  color: var(--text-muted);
+}
+
+/* Override for explicitly bold small labels (section headers) */
+html.dark .bento-card small.fw-bold,
+html.dark .bento-card .small.fw-bold {
+  color: var(--text-secondary);
+}
+
+/* ================================================================
+   END OF DARK THEME AUDIT PATCH
+   All fixes above target only visual presentation.
+   No backend logic, routes, or JS functionality was changed.
+================================================================ */
